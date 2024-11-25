@@ -21,10 +21,14 @@ import UserProfile from './pages/user-profile';
 import Notifications from './pages/Notifications';
 import Contact from './pages/Contact';
 import PfeSelection from './pages/PfeSelection';
+
 import { Toaster } from '@/components/ui/toaster';
 
 import { theme } from './theme';
-
+import AdminDashboard from './pages/admin_dashboard';
+import TeacherDashboard from './pages/teacher-dashboard';
+import StudentDashboard from './pages/student-dashboard';
+import CompanyDashboard from './pages/company-dashboard';
 
 function App() {
   return (
@@ -51,6 +55,10 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/pfe-selection" element={<PfeSelection />} />
+            <Route path="/admin_dashboard" element={<AdminDashboard />} />
+            <Route path="/teacher-dashboard" element={<TeacherDashboard/>} />
+            <Route path="/student-dashboard" element={<StudentDashboard/>} />
+            <Route path="/company-dashboard" element={<CompanyDashboard/>} />
           </Route>
         </Routes>
       </Router>

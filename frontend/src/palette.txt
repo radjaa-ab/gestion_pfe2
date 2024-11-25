@@ -1,0 +1,19 @@
+Color Palette:
+
+Primary: #3B7DDA (deep blue)
+Secondary: #2ECC71 (vibrant green)
+Accent: #8E44AD (rich purple)
+Background: #F4F6F9 (soft light gray)
+Text: #2C3E50 (dark slate)
+
+Typography:
+
+Font: Inter
+Weights: 400, 500, 600, 700
+Fallback: sans-serif
+
+Project Status Colors:
+
+Pending: #F39C12 (amber)
+Validated: #27AE60 (green)
+Rejected: #E74C3C (red)
