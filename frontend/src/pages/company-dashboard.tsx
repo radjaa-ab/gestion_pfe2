@@ -65,12 +65,15 @@ export default function CompanyDashboard() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const newProjectWithDefaults: Project = {
-      ...newProject,
-      id: projects.length + 1,
-      status: 'Not Started',
-      approvalStatus: 'pending',
-      students: [],
-      currentStage: 'Proposal'
+        ...newProject,
+        id: projects.length + 1,
+        status: 'Not Started',
+        approvalStatus: 'pending',
+        students: [],
+        currentStage: 'Proposal',
+        title: '',
+        description: '',
+        proposedBy: 'company'
     }
     setProjects(prevProjects => [...prevProjects, newProjectWithDefaults])
     toast({
