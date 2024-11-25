@@ -8,18 +8,50 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useToast } from "@/hooks/use-toast"
-import { Users, FileText, Bell } from 'lucide-react'
+import { Users, FileText, Bell, Upload } from 'lucide-react'
+import { Checkbox } from "@/components/ui/checkbox"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
-type User = {
+type UserBase = {
   id: number;
-  name: string;
+  nom: string;
+  prenom: string;
+  dateNaissance: string;
   email: string;
-  role: 'student' | 'teacher' | 'admin';
+  motDePasse: string;
 }
+
+type Student = UserBase & {
+  role: 'student';
+  specialite: string;
+  moyenne: number;
+}
+
+type Teacher = UserBase & {
+  role: 'teacher';
+  specialite: string;
+  grade: string;
+  anciennete: number;
+  promo: string;
+  isResponsableSpecialite: boolean;
+}
+
+type Admin = UserBase & {
+  role: 'admin';
+  domaine: string;
+}
+
+type Company = UserBase & {
+  role: 'company';
+  nomEntreprise: string;
+  secteur: string;
+}
+
+type User = Student | Teacher | Admin | Company;
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([])
-  const [newUser, setNewUser] = useState<Omit<User, 'id'>>({ name: '', email: '', role: 'student' })
+  const [newUser, setNewUser] = useState<Partial<User>>({ role: 'student' })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [notifications, setNotifications] = useState<{ id: number; message: string }[]>([])
   const { toast } = useToast()
@@ -27,9 +59,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Simulating fetching users
     setUsers([
-      { id: 1, name: 'John Doe', email: 'john@example.com', role: 'student' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'teacher' },
-      { id: 3, name: 'Admin User', email: 'admin@example.com', role: 'admin' },
+      { id: 1, nom: 'Doe', prenom: 'John', dateNaissance: '1995-05-15', email: 'john@example.com', role: 'student', specialite: 'Informatique', moyenne: 14.5, motDePasse: 'password123' },
+      { id: 2, nom: 'Smith', prenom: 'Jane', dateNaissance: '1980-10-20', email: 'jane@example.com', role: 'teacher', specialite: 'Mathématiques', grade: 'Professeur', anciennete: 10, promo: 'Math2023', isResponsableSpecialite: true, motDePasse: 'password456' },
+      { id: 3, nom: 'Admin', prenom: 'User', dateNaissance: '1985-03-25', email: 'admin@example.com', role: 'admin', domaine: 'Gestion académique', motDePasse: 'adminpass' },
     ])
 
     // Simulating notifications
@@ -44,24 +76,49 @@ export default function AdminDashboard() {
     setNewUser(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleRoleChange = (value: 'student' | 'teacher' | 'admin') => {
-    setNewUser(prev => ({ ...prev, role: value }))
+  const handleRoleChange = (value: 'student' | 'teacher' | 'admin' | 'company') => {
+    setNewUser({ role: value })
+  }
+
+  const generatePassword = () => {
+    return Math.random().toString(36).slice(-8)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const id = users.length + 1
-    setUsers(prev => [...prev, { id, ...newUser }])
+    const motDePasse = generatePassword()
+    const userWithId = { ...newUser, id, motDePasse } as User
+    setUsers(prev => [...prev, userWithId])
     toast({
       title: "User added",
-      description: `${newUser.name} has been successfully added as a ${newUser.role}.`,
+      description: `${userWithId.prenom} ${userWithId.nom} has been successfully added as a ${userWithId.role}.`,
     })
     setIsDialogOpen(false)
-    setNewUser({ name: '', email: '', role: 'student' })
+    setNewUser({ role: 'student' })
+  }
+
+  const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Here you would typically send this file to your backend for processing
+      // For this example, we'll just show a success message
+      toast({
+        title: "CSV Imported",
+        description: "The CSV file has been successfully imported.",
+      })
+    }
   }
 
   const handleNotificationDismiss = (id: number) => {
     setNotifications(prev => prev.filter(notification => notification.id !== id))
+  }
+
+  const handleCheckboxChange = (checked: boolean | 'indeterminate') => {
+    setNewUser(prev => ({
+      ...prev,
+      isResponsableSpecialite: checked === true
+    }))
   }
 
   return (
@@ -119,44 +176,131 @@ export default function AdminDashboard() {
               <DialogTrigger asChild>
                 <Button>Add New User</Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-md max-h-[80vh]">
                 <DialogHeader>
                   <DialogTitle>Add New User</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" name="name" value={newUser.name} onChange={handleInputChange} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" value={newUser.email} onChange={handleInputChange} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select onValueChange={handleRoleChange} value={newUser.role}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="teacher">Teacher</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                    <Button type="submit">Add User</Button>
-                  </div>
-                </form>
+                <ScrollArea className="h-[60vh] pr-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="role">Role</Label>
+                      <Select onValueChange={handleRoleChange} value={newUser.role}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="student">Student</SelectItem>
+                          <SelectItem value="teacher">Teacher</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="company">Company</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="nom">Nom</Label>
+                      <Input id="nom" name="nom" value={newUser.nom || ''} onChange={handleInputChange} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="prenom">Prénom</Label>
+                      <Input id="prenom" name="prenom" value={newUser.prenom || ''} onChange={handleInputChange} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dateNaissance">Date de Naissance</Label>
+                      <Input id="dateNaissance" name="dateNaissance" type="date" value={newUser.dateNaissance || ''} onChange={handleInputChange} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" name="email" type="email" value={newUser.email || ''} onChange={handleInputChange} required />
+                    </div>
+                    {newUser.role === 'student' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="specialite">Spécialité</Label>
+                          <Input id="specialite" name="specialite" value={(newUser as Student).specialite || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="moyenne">Moyenne</Label>
+                          <Input id="moyenne" name="moyenne" type="number" step="0.01" value={(newUser as Student).moyenne || ''} onChange={handleInputChange} required />
+                        </div>
+                      </>
+                    )}
+                    {newUser.role === 'teacher' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="specialite">Spécialité</Label>
+                          <Input id="specialite" name="specialite" value={(newUser as Teacher).specialite || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="grade">Grade</Label>
+                          <Input id="grade" name="grade" value={(newUser as Teacher).grade || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="anciennete">Ancienneté</Label>
+                          <Input id="anciennete" name="anciennete" type="number" value={(newUser as Teacher).anciennete || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="promo">Promo</Label>
+                          <Input id="promo" name="promo" value={(newUser as Teacher).promo || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="isResponsableSpecialite" 
+                            checked={(newUser as Teacher).isResponsableSpecialite || false}
+                            onCheckedChange={handleCheckboxChange}
+                          />
+                          <Label htmlFor="isResponsableSpecialite">Responsable de Spécialité</Label>
+                        </div>
+                      </>
+                    )}
+                    {newUser.role === 'admin' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="domaine">Domaine</Label>
+                        <Input id="domaine" name="domaine" value={(newUser as Admin).domaine || ''} onChange={handleInputChange} required />
+                      </div>
+                    )}
+                    {newUser.role === 'company' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="nomEntreprise">Nom de l'Entreprise</Label>
+                          <Input id="nomEntreprise" name="nomEntreprise" value={(newUser as Company).nomEntreprise || ''} onChange={handleInputChange} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="secteur">Secteur</Label>
+                          <Input id="secteur" name="secteur" value={(newUser as Company).secteur || ''} onChange={handleInputChange} required />
+                        </div>
+                      </>
+                    )}
+                    <div className="flex justify-end space-x-2">
+                      <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                      <Button type="submit">Add User</Button>
+                    </div>
+                  </form>
+                </ScrollArea>
               </DialogContent>
             </Dialog>
+            <div>
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleCSVImport}
+                style={{ display: 'none' }}
+                id="csv-upload"
+              />
+              <Label htmlFor="csv-upload" className="cursor-pointer">
+                <Button variant="outline" asChild>
+                  <span>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import CSV
+                  </span>
+                </Button>
+              </Label>
+            </div>
           </div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
+                <TableHead>Nom</TableHead>
+                <TableHead>Prénom</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Actions</TableHead>
@@ -165,21 +309,22 @@ export default function AdminDashboard() {
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.nom}</TableCell>
+                  <TableCell>{user.prenom}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <Button variant="outline" size="sm" onClick={() => {
                       toast({
                         title: "Edit user",
-                        description: `Editing ${user.name}'s information.`,
+                        description: `Editing ${user.prenom} ${user.nom}'s information.`,
                       })
                     }}>Edit</Button>
                     <Button variant="outline" size="sm" className="ml-2" onClick={() => {
                       setUsers(prev => prev.filter(u => u.id !== user.id))
                       toast({
                         title: "User deleted",
-                        description: `${user.name} has been removed from the system.`,
+                        description: `${user.prenom} ${user.nom} has been removed from the system.`,
                         variant: "destructive",
                       })
                     }}>Delete</Button>
@@ -193,4 +338,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-
