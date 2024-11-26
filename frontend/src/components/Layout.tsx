@@ -1,6 +1,6 @@
-import React from 'react';
+/*import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Sidebar } from './sidebar';
+import { Sidebar } from './Sidebar';
 import { Header } from './header';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
@@ -25,3 +25,4 @@ export function Layout({ hideSidebar = false, children }: LayoutProps) {
   );
 }
 
+*/
