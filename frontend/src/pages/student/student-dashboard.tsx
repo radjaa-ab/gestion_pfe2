@@ -10,8 +10,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useToast } from "@/hooks/use-toast"
 import { FileText, Clock, Calendar, Plus, Edit, Trash } from 'lucide-react'
-import { StatusBadge } from '../components/status-badge'
-import { Project, Task, ProposedProject } from './types'
+import { StatusBadge } from '../../components/status-badge'
+import { Project, Task, ProposedProject } from '../types'
 
 export default function StudentDashboard() {
   const [projects, setProjects] = useState<Project[]>([])

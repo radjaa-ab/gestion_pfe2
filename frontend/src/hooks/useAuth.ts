@@ -11,11 +11,13 @@ interface MockUser {
 export const useAuth = () => {
   // Predefined mock users
   const mockUsers: MockUser[] = [
- 
-    { name: 'Teacher User', email: 'teacher@gmail.com', role: 'teacher' },
-    { name: 'Admin User', email: 'admin@gmail.com', role: 'admin' },
-    { name: 'Student User', email: 'student@gmail.com', role: 'student' },
+    
     { name: 'Company User', email: 'company@gmail.com', role: 'company' },
+    { name: 'Admin User', email: 'admin@gmail.com', role: 'admin' },
+    { name: 'Teacher User', email: 'teacher@gmail.com', role: 'teacher' },
+  
+    { name: 'Student User', email: 'student@gmail.com', role: 'student' },
+   
   ];
 
   // Retrieve email and role from localStorage or use the first mock user by default

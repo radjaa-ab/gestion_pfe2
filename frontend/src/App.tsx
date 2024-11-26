@@ -8,11 +8,11 @@ import TeacherLayout from './layouts/TeacherLayout';
 import StudentLayout from './layouts/StudentLayout';
 import CompanyLayout from './layouts/CompanyLayout';
 import Login from './pages/Login';
-import AdminDashboard from './pages/admin_dashboard';
-import TeacherDashboard from './pages/teacher-dashboard';
-import StudentDashboard from './pages/student-dashboard';
+import AdminDashboard from './pages/admin/admin_dashboard';
+import TeacherDashboard from './pages/teacher/teacher-dashboard';
+import StudentDashboard from './pages/student/student-dashboard';
 import Dashboard from './pages';
-import CompanyDashboard from './pages/company-dashboard';
+import CompanyDashboard from './pages/company/company-dashboard';
 import Users from './pages/users';
 import Projects from './pages/projects';
 import Schedule from './pages/schedule';
@@ -23,7 +23,7 @@ import ProjectProposal from './pages/project-proposal';
 import SubmitProject from './pages/submit-project';
 import TeamFormation from './pages/team-formation';
 import PfeSelection from './pages/PfeSelection';
-import Register from './pages/register';
+import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
 
 function AppRoutes() {
