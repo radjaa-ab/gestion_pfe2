@@ -2,27 +2,50 @@ import { useState } from 'react';
 
 type Role = 'admin' | 'teacher' | 'student' | 'company';
 
+interface MockUser {
+  name: string;
+  email: string;
+  role: Role;
+}
+
 export const useAuth = () => {
-  // State to store the current role
-  const [role, setRole] = useState<Role>(() => {
-    // Retrieve role from localStorage or default to 'admin'
-    return (localStorage.getItem('role') as Role) || 'admin';
+  // Predefined mock users
+  const mockUsers: MockUser[] = [
+ 
+    { name: 'Teacher User', email: 'teacher@gmail.com', role: 'teacher' },
+    { name: 'Admin User', email: 'admin@gmail.com', role: 'admin' },
+    { name: 'Student User', email: 'student@gmail.com', role: 'student' },
+    { name: 'Company User', email: 'company@gmail.com', role: 'company' },
+  ];
+
+  // Retrieve email and role from localStorage or use the first mock user by default
+  const [currentUser, setCurrentUser] = useState<MockUser>(() => {
+    const savedEmail = localStorage.getItem('email');
+    const savedUser = mockUsers.find((user) => user.email === savedEmail);
+    return savedUser || mockUsers[0];
   });
 
-  // Mocked user data
-  const mockUser = {
-    user: { name: 'Test User', email: 'test@example.com' },
-    role,
+  // Function to log in as a specific user
+  const loginAsUser = (email: string) => {
+    const user = mockUsers.find((user) => user.email === email);
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('email', user.email);
+    } else {
+      console.error('User not found');
+    }
   };
 
-  // Setter to update role and persist it
-  const updateRole = (newRole: Role) => {
-    setRole(newRole);
-    localStorage.setItem('role', newRole);
+  // Function to log out
+  const logout = () => {
+    setCurrentUser(mockUsers[0]); // Default back to the first user
+    localStorage.removeItem('email');
   };
 
   return {
-    ...mockUser,
-    setRole: updateRole, // Export the role setter
+    user: currentUser,
+    role: currentUser.role,
+    loginAsUser, // Function to switch between users
+    logout, // Function to clear user data
   };
 };

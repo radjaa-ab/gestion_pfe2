@@ -1,39 +1,92 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Home, Users, FileText, Calendar, Settings, MessageSquare, ClipboardList, FileSignature, Upload, CheckSquare } from 'lucide-react';
+import { useLocation, Link as RouterLink } from 'react-router-dom';
+import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider, Toolbar } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import {
+  Home,
+  People as Users,
+  Description as FileText,
+  Event as Calendar,
+  Settings,
+  Message as MessageSquare,
+  Assignment as ClipboardList,
+  NoteAdd as FileSignature,
+  PersonAdd as UserPlus,
+  Inventory as Package,
+  AccessTime as Clock,
+  CloudUpload as Upload,
+  Star,
+  Group,
+  Person,
+  Notifications,
+  Mail,
+  MenuBook as Book,
+} from '@mui/icons-material';
 
-const iconMap: { [key: string]: React.ElementType } = {
-  Home, Users, FileText, Calendar, Settings, MessageSquare, ClipboardList, FileSignature, Upload, CheckSquare
-};
+// Styled Drawer for the Sidebar
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  width: 240,
+  flexShrink: 0,
+  '& .MuiDrawer-paper': {
+    width: 240,
+    boxSizing: 'border-box',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+  },
+}));
 
-type MenuItem = {
+// Styled ListItemButton for Menu Items with hover and selected states
+const StyledListItemButton = styled(ListItemButton)<{
+  component?: React.ElementType;
+  to?: string;
+}>(({ theme }) => ({
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  '&.Mui-selected': {
+    backgroundColor: theme.palette.primary.light,
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+}));
+
+// Define a type for the menuItems prop
+interface MenuItem {
   label: string;
-  icon: string;
+  icon: React.ElementType; // The icon will be a React component
   link: string;
-};
-
-type SidebarProps = {
-  menuItems: MenuItem[];
-};
-
-export function Sidebar({ menuItems }: SidebarProps) {
-  return (
-    <div className="w-64 bg-white shadow-md">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold">PFE Platform</h1>
-      </div>
-      <nav>
-        {menuItems.map((item, index) => {
-          const Icon = iconMap[item.icon];
-          return (
-            <Link key={index} to={item.link} className="flex items-center p-4 hover:bg-gray-100">
-              {Icon && <Icon className="mr-2" />}
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
-  );
 }
 
+interface SidebarProps {
+  menuItems: MenuItem[];
+}
+
+export function Sidebar({ menuItems }: SidebarProps) {
+  const location = useLocation();
+
+  return (
+    <StyledDrawer variant="permanent" anchor="left">
+      <Toolbar />
+      <Typography variant="h6" sx={{ p: 2, textAlign: 'center' }}>
+        PFE Platform
+      </Typography>
+      <Divider />
+      <List>
+        {menuItems.map(({ label, icon: Icon, link }, index) => (
+          <StyledListItemButton
+            key={index}
+            selected={location.pathname === link}
+            component={RouterLink}
+            to={link}
+          >
+            <ListItemIcon sx={{ color: 'primary.contrastText' }}>
+              <Icon />
+            </ListItemIcon>
+            <ListItemText primary={label} />
+          </StyledListItemButton>
+        ))}
+      </List>
+    </StyledDrawer>
+  );
+}
