@@ -121,6 +121,12 @@ export default function AdminDashboard() {
     }))
   }
 
+  const handleSpecialiteChange = (value: string) => {
+    setNewUser((prev) => ({
+      ...prev,
+      specialite: value,
+    }));
+  };
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h2>
@@ -215,9 +221,25 @@ export default function AdminDashboard() {
                     {newUser.role === 'student' && (
                       <>
                         <div className="space-y-2">
-                          <Label htmlFor="specialite">Spécialité</Label>
-                          <Input id="specialite" name="specialite" value={(newUser as Student).specialite || ''} onChange={handleInputChange} required />
-                        </div>
+                            <Label htmlFor="specialite">Spécialité</Label>
+                            <Select 
+                              onValueChange={(value) => handleSpecialiteChange(value)} 
+                              value={(newUser as Student).specialite || ''}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select spécialité" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="GL">GL</SelectItem>
+                                <SelectItem value="AI">AI</SelectItem>
+                                <SelectItem value="SIC">SIC</SelectItem>
+                                <SelectItem value="RSD">RSD</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                     
+
                         <div className="space-y-2">
                           <Label htmlFor="moyenne">Moyenne</Label>
                           <Input id="moyenne" name="moyenne" type="number" step="0.01" value={(newUser as Student).moyenne || ''} onChange={handleInputChange} required />
