@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
+import { Header } from '../components/header'; 
 
 const studentMenuItems = [
   { label: "Dashboard", icon: "Home", link: "/student" },
@@ -15,12 +16,14 @@ const studentMenuItems = [
 
 export default function StudentLayout() {
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar menuItems={studentMenuItems} />
-      <main className="flex-1 overflow-y-auto p-6">
-        <Outlet />
-      </main>
+    <div className="flex h-screen flex-col bg-gray-100">
+      <Header /> {/* Header added */}
+      <div className="flex flex-1">
+        <Sidebar menuItems={studentMenuItems} />
+        <main className="flex-1 overflow-y-auto p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
-
