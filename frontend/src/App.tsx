@@ -25,10 +25,11 @@ import TeamFormation from './pages/team-formation';
 import PfeSelection from './pages/PfeSelection';
 import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
+import DefenseManagement from './pages/DefenseManagement';
+
 
 function AppRoutes() {
   const { user } = useAuth();
-
 
 
   if (!user) {
@@ -50,7 +51,7 @@ function AppRoutes() {
           <Route path="/projects" element={<Projects />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/settings" element={<Settings />} />
-          
+          <Route path="/defense-management" element={<DefenseManagement />} />
         </Route>
       )}
       {user.role === 'teacher' && (
@@ -58,7 +59,7 @@ function AppRoutes() {
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/schedule" element={<Schedule />} />
-        
+          <Route path="/defense-management" element={<DefenseManagement />} />
         </Route>
       )}
       {user.role === 'student' && (
@@ -68,7 +69,7 @@ function AppRoutes() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/pfe-selection" element={<PfeSelection />} />
           <Route path="/submit-project" element={<SubmitProject />} />
-      
+          <Route path="/defense-management" element={<DefenseManagement />} />
         </Route>
       )}
       {user.role === 'company' && (

@@ -1,14 +1,30 @@
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { useToast } from "@/hooks/use-toast"
-import { Search, Plus, Eye, Edit, Trash2 } from 'lucide-react'
-import { Badge } from "@/components/ui/badge"
+import React, { useState, useEffect } from 'react';
+import { 
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger 
+} from "@/components/ui/dialog";
+import { 
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+} from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Plus, Eye, Edit, Trash2 } from 'lucide-react';
+import api from '../services/api';
+
+interface Project {
+  id: number;
+  title: string;
+  description?: string;
+  supervisor: string;
+  status: 'Pending' | 'In Progress' | 'Completed';
+  type?: string;
+}
 
 interface ProjectNotification {
   id: number;
@@ -16,98 +32,103 @@ interface ProjectNotification {
   message: string;
 }
 
-interface Project {
-  id: number;
-  title: string;
-  supervisor: string;
-  status: 'Pending' | 'In Progress' | 'Completed';
-  type: string;
-}
-
 export default function Projects() {
-  const [projectNotifications, setProjectNotifications] = useState<ProjectNotification[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectNotifications, setProjectNotifications] = useState<ProjectNotification[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newProject, setNewProject] = useState<Omit<Project, 'id'>>({
     title: '',
     supervisor: '',
     status: 'Pending',
-    type: ''
-  })
-  const { toast } = useToast()
+    type: '',
+  });
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Simulating fetching project notifications and projects
-    const fetchedNotifications: ProjectNotification[] = [
+    fetchProjects();
+    setProjectNotifications([
       { id: 1, type: 'default', message: 'New project proposal submitted.' },
       { id: 2, type: 'warning', message: 'Project deadline approaching.' },
       { id: 3, type: 'destructive', message: 'Project resources depleted.' },
-    ]
-    setProjectNotifications(fetchedNotifications)
+    ]);
+  }, []);
 
-    const fetchedProjects: Project[] = [
-      { id: 1, title: 'AI Research', supervisor: 'Dr. Smith', status: 'In Progress', type: 'Research' },
-      { id: 2, title: 'Web App Development', supervisor: 'Prof. Johnson', status: 'Completed', type: 'Development' },
-      { id: 3, title: 'Data Analysis', supervisor: 'Dr. Brown', status: 'Pending', type: 'Analysis' },
-    ]
-    setProjects(fetchedProjects)
-  }, [])
-
-  const handleDismissNotification = (id: number) => {
-    setProjectNotifications(prev => prev.filter(notification => notification.id !== id))
-    toast({
-      title: "Notification dismissed",
-      description: "The project notification has been removed.",
-    })
-  }
+  const fetchProjects = async () => {
+    try {
+      const response = await api.get('/projects');
+      setProjects(response.data);
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to fetch projects.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setNewProject(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setNewProject((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSelectChange = (name: 'status' | 'type', value: string) => {
-    setNewProject(prev => ({ ...prev, [name]: value }))
-  }
+    setNewProject((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const id = projects.length + 1
-    setProjects(prev => [...prev, { id, ...newProject }])
+    e.preventDefault();
+    const id = projects.length + 1;
+    setProjects((prev) => [...prev, { id, ...newProject }]);
     toast({
       title: "Project created",
       description: `${newProject.title} has been successfully added.`,
-    })
-    setIsDialogOpen(false)
-    setNewProject({ title: '', supervisor: '', status: 'Pending', type: '' })
-  }
+    });
+    setIsDialogOpen(false);
+    setNewProject({ title: '', supervisor: '', status: 'Pending', type: '' });
+  };
 
   const handleDelete = (id: number) => {
-    setProjects(prev => prev.filter(project => project.id !== id))
+    setProjects((prev) => prev.filter((project) => project.id !== id));
     toast({
       title: "Project deleted",
       description: "The project has been successfully removed.",
       variant: "destructive",
-    })
-  }
+    });
+  };
 
-  const filteredProjects = projects.filter(project => 
-    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.supervisor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.type.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleDismissNotification = (id: number) => {
+    setProjectNotifications((prev) => prev.filter((notif) => notif.id !== id));
+    toast({
+      title: "Notification dismissed",
+      description: "The notification has been removed.",
+    });
+  };
+
+  const filteredProjects = projects.filter((project) =>
+    [project.title, project.supervisor, project.status, project.type]
+      .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Projects</h2>
-      
+      <h2 className="text-3xl font-bold">Projects</h2>
+
       {projectNotifications.map((notification) => (
-        <Alert key={notification.id} variant={notification.type === 'warning' ? 'default' : notification.type}>
-          <AlertTitle>{notification.type === 'destructive' ? 'Error' : notification.type === 'warning' ? 'Warning' : 'Info'}</AlertTitle>
+      <Alert 
+      key={notification.id} 
+      variant={notification.type === 'warning' ? 'default' : notification.type}
+    >
+    
+          <AlertTitle>
+            {notification.type === 'warning' ? 'Warning' : notification.type === 'destructive' ? 'Error' : 'Info'}
+          </AlertTitle>
           <AlertDescription>{notification.message}</AlertDescription>
-          <Button variant="outline" size="sm" onClick={() => handleDismissNotification(notification.id)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleDismissNotification(notification.id)}
+          >
             Dismiss
           </Button>
         </Alert>
@@ -135,43 +156,51 @@ export default function Projects() {
               <DialogTitle>Add New Project</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="title">Project Title</label>
-                <Input id="title" name="title" value={newProject.title} onChange={handleInputChange} required />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="supervisor">Supervisor</label>
-                <Input id="supervisor" name="supervisor" value={newProject.supervisor} onChange={handleInputChange} required />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="status">Status</label>
-                <Select onValueChange={(value) => handleSelectChange('status', value)} value={newProject.status}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="type">Project Type</label>
-                <Select onValueChange={(value) => handleSelectChange('type', value)} value={newProject.type}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select project type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Research">Research</SelectItem>
-                    <SelectItem value="Development">Development</SelectItem>
-                    <SelectItem value="Analysis">Analysis</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Input
+                name="title"
+                placeholder="Project Title"
+                value={newProject.title}
+                onChange={handleInputChange}
+                required
+              />
+              <Input
+                name="supervisor"
+                placeholder="Supervisor"
+                value={newProject.supervisor}
+                onChange={handleInputChange}
+                required
+              />
+              <Select
+                onValueChange={(value) => handleSelectChange('status', value)}
+                value={newProject.status}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => handleSelectChange('type', value)}
+                value={newProject.type}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Research">Research</SelectItem>
+                  <SelectItem value="Development">Development</SelectItem>
+                  <SelectItem value="Analysis">Analysis</SelectItem>
+                </SelectContent>
+              </Select>
               <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button type="submit">Create Project</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Create</Button>
               </div>
             </form>
           </DialogContent>
@@ -199,7 +228,15 @@ export default function Projects() {
                   <TableCell>{project.title}</TableCell>
                   <TableCell>{project.supervisor}</TableCell>
                   <TableCell>
-                    <Badge variant={project.status === 'Completed' ? 'success' : project.status === 'In Progress' ? 'warning' : 'default'}>
+                    <Badge
+                      variant={
+                        project.status === 'Completed'
+                          ? 'success'
+                          : project.status === 'In Progress'
+                          ? 'warning'
+                          : 'default'
+                      }
+                    >
                       {project.status}
                     </Badge>
                   </TableCell>
@@ -211,7 +248,11 @@ export default function Projects() {
                     <Button variant="ghost" size="sm">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(project.id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(project.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>
@@ -222,6 +263,5 @@ export default function Projects() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

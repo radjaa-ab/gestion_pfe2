@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, InputBase, IconButton, Badge } from '@mui/material';
+import { AppBar, Toolbar, Typography, InputBase, IconButton, Badge, Button } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import { Search as SearchIcon, Notifications as NotificationsIcon, Menu as MenuIcon } from '@mui/icons-material';
+import { useAuth } from '../hooks/useAuth';
 
+// Styled components for search bar
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -44,9 +46,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export function Header() {
+  const { logout } = useAuth(); // Use the logout function from the auth hook
+
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
+        {/* Menu icon for mobile view */}
         <IconButton
           size="large"
           edge="start"
@@ -56,6 +61,8 @@ export function Header() {
         >
           <MenuIcon />
         </IconButton>
+
+        {/* Title */}
         <Typography
           variant="h6"
           noWrap
@@ -64,6 +71,8 @@ export function Header() {
         >
           PFE Platform
         </Typography>
+
+        {/* Search bar */}
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
@@ -73,7 +82,13 @@ export function Header() {
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
-        <div style={{ flexGrow: 1 }} />
+
+        {/* Logout Button */}
+        <Button onClick={logout} color="inherit" sx={{ marginLeft: 'auto' }}>
+          Logout
+        </Button>
+
+        {/* Notification Icon */}
         <IconButton
           size="large"
           aria-label="show 17 new notifications"
@@ -89,4 +104,3 @@ export function Header() {
     </AppBar>
   );
 }
-
