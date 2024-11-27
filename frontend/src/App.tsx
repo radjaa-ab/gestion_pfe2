@@ -27,14 +27,15 @@ import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
 
 function AppRoutes() {
-  const { user, role } = useAuth();
+  const { user } = useAuth();
+
+
 
   if (!user) {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-     
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
@@ -42,46 +43,42 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {role === 'admin' && (
+      {user.role === 'admin' && (
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/users" element={<Users />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/settings" element={<Settings />} />
+          
         </Route>
       )}
-      {role === 'teacher' && (
+      {user.role === 'teacher' && (
         <Route element={<TeacherLayout />}>
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/schedule" element={<Schedule />} />
-          <Route path="/feedback-submission" element={<FeedbackSubmission />} />
-          <Route path="/progress-report" element={<ProgressReport />} />
-          <Route path="/project-proposal" element={<ProjectProposal />} />
+        
         </Route>
       )}
-      {role === 'student' && (
+      {user.role === 'student' && (
         <Route element={<StudentLayout />}>
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/schedule" element={<Schedule />} />
-          <Route path="/progress-report" element={<ProgressReport />} />
-          <Route path="/project-proposal" element={<ProjectProposal />} />
-          <Route path="/team-formation" element={<TeamFormation />} />
-          <Route path="/submit-project" element={<SubmitProject />} />
           <Route path="/pfe-selection" element={<PfeSelection />} />
+          <Route path="/submit-project" element={<SubmitProject />} />
+      
         </Route>
       )}
-      {role === 'company' && (
+      {user.role === 'company' && (
         <Route element={<CompanyLayout />}>
           <Route path="/company" element={<CompanyDashboard />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/project-proposal" element={<ProjectProposal />} />
         </Route>
       )}
-      <Route path="*" element={<Navigate to={`/${role}`} replace />} />
-      
+      <Route path="*" element={<Navigate to={`/${user.role}`} replace />} />
     </Routes>
   );
 }
@@ -98,3 +95,4 @@ function App() {
 }
 
 export default App;
+

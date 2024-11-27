@@ -1,6 +1,16 @@
 import React from 'react';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider, Toolbar } from '@mui/material';
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Divider,
+  Toolbar,
+  Button as MuiButton,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   Home,
@@ -22,6 +32,7 @@ import {
   Mail,
   MenuBook as Book,
 } from '@mui/icons-material';
+import { useAuth } from '../hooks/useAuth';
 
 // Styled Drawer for the Sidebar
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
@@ -64,6 +75,7 @@ interface SidebarProps {
 
 export function Sidebar({ menuItems }: SidebarProps) {
   const location = useLocation();
+  const { logout } = useAuth();
 
   return (
     <StyledDrawer variant="permanent" anchor="left">
@@ -87,6 +99,17 @@ export function Sidebar({ menuItems }: SidebarProps) {
           </StyledListItemButton>
         ))}
       </List>
+      <Divider />
+      <div style={{ padding: '16px' }}>
+        <MuiButton
+          variant="outlined"
+          fullWidth
+          onClick={logout}
+          style={{ color: 'inherit', borderColor: 'inherit' }}
+        >
+          Logout
+        </MuiButton>
+      </div>
     </StyledDrawer>
   );
 }
