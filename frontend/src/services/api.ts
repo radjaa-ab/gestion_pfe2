@@ -1,10 +1,17 @@
-import axios from "axios";
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://127.0.0.1:8000/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: 'http://localhost:8000',
+  withCredentials: true,
+});
+
+// Add a request interceptor to include the CSRF token
+api.interceptors.request.use((config) => {
+  const token = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN'))?.split('=')[1];
+  if (token) {
+    config.headers['X-XSRF-TOKEN'] = decodeURIComponent(token);
+  }
+  return config;
 });
 
 export default api;
