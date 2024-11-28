@@ -2,8 +2,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "dev": "concurrently \"npm run dev --prefix ../frontend\" \"vite\"",
+        "build": "vite build && cd ../frontend && npm run build && cp -r ../frontend/dist/* public/",
+        "build-laravel": "react-scripts build && cp -r build/* ../backend/public/",
+
+        "postinstall": "npm run build"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",
