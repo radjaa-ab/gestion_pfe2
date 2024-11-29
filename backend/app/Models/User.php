@@ -3,19 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  // Import HasFactory
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasFactory;  // Add HasFactory
+    use HasRoles;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',
+        'role'
     ];
 
     protected $hidden = [
@@ -23,12 +21,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function setPasswordAttribute($value)
+    public function teacher()
     {
-        $this->attributes['password'] = bcrypt($value);
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    public function company()
+    {
+        return $this->hasOne(Company::class);
     }
 }
