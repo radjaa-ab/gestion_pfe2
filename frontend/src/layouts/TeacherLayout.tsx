@@ -12,6 +12,7 @@ const teacherMenuItems = [
   { label: "Feedback", icon: MessageSquare, link: "/feedback-submission" },
   { label: "Progress Reports", icon: ClipboardList, link: "/progress-report" },
   { label: "Project Proposals", icon: FileSignature, link: "/project-proposal" },
+  
 ];
 
 export default function TeacherLayout() {

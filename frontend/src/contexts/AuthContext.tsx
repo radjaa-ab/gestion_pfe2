@@ -5,67 +5,68 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'teacher' | 'student' | 'company';
+  role: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  role: 'admin' | 'teacher' | 'student' | 'company' | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  setRole: (role: 'admin' | 'teacher' | 'student' | 'company') => void;
+  logout: () => Promise<void>;
+  loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  login: async () => {},
+  logout: async () => {},
+  loading: true,
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<'admin' | 'teacher' | 'student' | 'company' | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedRole = localStorage.getItem('role');
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      api.get('/user').then(response => {
-        setUser(response.data);
-        setRole(response.data.role);
-      }).catch(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
-      });
-    } else if (savedRole) {
-      setRole(savedRole as 'admin' | 'teacher' | 'student' | 'company');
-    }
+    checkAuth();
   }, []);
 
+  const checkAuth = async () => {
+    try {
+      const response = await api.get('/api/user');
+      setUser(response.data);
+    } catch (error) {
+      console.error('Not authenticated', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const login = async (email: string, password: string) => {
-    const response = await api.post('/login', { email, password });
-    const { access_token, user } = response.data;
-    localStorage.setItem('token', access_token);
-    localStorage.setItem('role', user.role);
-    api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-    setUser(user);
-    setRole(user.role);
+    try {
+      const response = await api.post('/api/login', { email, password });
+      localStorage.setItem('token', response.data.access_token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Login failed', error);
+      throw error;
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    api.defaults.headers.common['Authorization'] = '';
-    setUser(null);
-    setRole(null);
-  };
-
-  const updateRole = (newRole: 'admin' | 'teacher' | 'student' | 'company') => {
-    setRole(newRole);
-    localStorage.setItem('role', newRole);
+  const logout = async () => {
+    try {
+      await api.post('/api/logout');
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout, setRole: updateRole }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
-

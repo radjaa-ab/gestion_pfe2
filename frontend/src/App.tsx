@@ -25,60 +25,63 @@ import TeamFormation from './pages/team-formation';
 import PfeSelection from './pages/PfeSelection';
 import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
+import DefenseManagement from './pages/DefenseManagement';
+import DefenseSchedule from './pages/DefenseSchedule';
+
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user} = useAuth();
+
+ 
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function AppRoutes() {
   const { user } = useAuth();
 
-
-
-  if (!user) {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    );
-  }
-
   return (
     <Routes>
-      {user.role === 'admin' && (
-        <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/settings" element={<Settings />} />
-          
-        </Route>
-      )}
-      {user.role === 'teacher' && (
-        <Route element={<TeacherLayout />}>
-          <Route path="/teacher" element={<TeacherDashboard />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/schedule" element={<Schedule />} />
-        
-        </Route>
-      )}
-      {user.role === 'student' && (
-        <Route element={<StudentLayout />}>
-          <Route path="/student" element={<StudentDashboard />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/pfe-selection" element={<PfeSelection />} />
-          <Route path="/submit-project" element={<SubmitProject />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       
-        </Route>
-      )}
-      {user.role === 'company' && (
-        <Route element={<CompanyLayout />}>
-          <Route path="/company" element={<CompanyDashboard />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/project-proposal" element={<ProjectProposal />} />
-        </Route>
-      )}
-      <Route path="*" element={<Navigate to={`/${user.role}`} replace />} />
+      <Route path="/" element={<ProtectedRoute>{user ? <Navigate to={`/${user.role}`} replace /> : null}</ProtectedRoute>} />
+
+      <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<Users />} />
+        <Route path="projects" element={<Projects />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="defense-management" element={<DefenseManagement />} />
+      </Route>
+
+      <Route path="/teacher" element={<ProtectedRoute><TeacherLayout /></ProtectedRoute>}>
+        <Route index element={<TeacherDashboard />} />
+        <Route path="projects" element={<Projects />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="defense-schedule" element={<DefenseSchedule />} />
+      </Route>
+
+      <Route path="/student" element={<ProtectedRoute><StudentLayout /></ProtectedRoute>}>
+        <Route index element={<StudentDashboard />} />
+        <Route path="projects" element={<Projects />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="pfe-selection" element={<PfeSelection />} />
+        <Route path="submit-project" element={<SubmitProject />} />
+        <Route path="defense-schedule" element={<DefenseSchedule />} />
+      </Route>
+
+      <Route path="/company" element={<ProtectedRoute><CompanyLayout /></ProtectedRoute>}>
+        <Route index element={<CompanyDashboard />} />
+        <Route path="projects" element={<Projects />} />
+        <Route path="project-proposal" element={<ProjectProposal />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
