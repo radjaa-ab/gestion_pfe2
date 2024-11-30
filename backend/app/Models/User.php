@@ -44,4 +44,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Company::class);
     }
+    public function pfeProposals()
+{
+    return $this->hasMany(PfeProposal::class);
+}
 }

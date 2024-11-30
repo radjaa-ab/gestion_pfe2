@@ -1,28 +1,27 @@
 <?php
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PfeProposal extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
+        'user_id',
         'title',
-        'description',
+        'summary',
         'type',
-        'master_option',
+        'option',
         'technologies',
         'material_needs',
-        'proposer_id',
-        'is_validated'
+        'status',
     ];
 
-    protected $casts = [
-        'technologies' => 'array',
-        'is_validated' => 'boolean'
-    ];
-
-    public function proposer()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'proposer_id');
+        return $this->belongsTo(User::class);
     }
 }
