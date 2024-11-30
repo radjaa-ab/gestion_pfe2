@@ -6,7 +6,7 @@
     <title>Laravel</title>
 
     @viteReactRefresh
-    @vite(['resources/js/app.tsx'])
+    @vite(['resources/js/app.js'])
 </head>
 <body>
     <div id="root"></div>
