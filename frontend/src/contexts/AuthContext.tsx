@@ -5,7 +5,27 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role: 'admin' | 'teacher' | 'student' | 'company';
+  teacher?: {
+    first_name: string;
+    last_name: string;
+    personal_email: string;
+    recruitment_date: string;
+    grade: string;
+  };
+  student?: {
+    first_name: string;
+    last_name: string;
+    university_email: string;
+    master_option: string;
+    master1_average: number;
+  };
+  company?: {
+    company_name: string;
+    contact_first_name: string;
+    contact_last_name: string;
+    contact_email: string;
+  };
 }
 
 interface AuthContextType {
@@ -31,21 +51,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const checkAuth = async () => {
-    try {
-      const response = await api.get('/api/user');
-      setUser(response.data);
-    } catch (error) {
-      console.error('Not authenticated', error);
-    } finally {
-      setLoading(false);
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await api.get('/user');
+        setUser(response.data);
+      } catch (error) {
+        console.error('Authentication check failed', error);
+        localStorage.removeItem('token');
+      }
     }
+    setLoading(false);
   };
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await api.post('/api/login', { email, password });
+      const response = await api.post('/login', { email, password });
       localStorage.setItem('token', response.data.access_token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
       setUser(response.data.user);
     } catch (error) {
       console.error('Login failed', error);
@@ -55,12 +77,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await api.post('/api/logout');
-      localStorage.removeItem('token');
-      delete api.defaults.headers.common['Authorization'];
-      setUser(null);
+      await api.post('/logout');
     } catch (error) {
       console.error('Logout failed', error);
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
     }
   };
 
@@ -70,3 +92,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+

@@ -6,9 +6,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+
+use Illuminate\Notifications\Notifiable;
+
 class User extends Authenticatable
 {
-    use HasApiTokens, HasRoles;
+    use HasApiTokens, HasRoles , Notifiable;
+ 
 
     protected $fillable = [
         'name',
@@ -20,6 +24,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
     ];
 
     public function teacher()

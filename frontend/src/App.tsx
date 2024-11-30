@@ -28,17 +28,7 @@ import ResourceRequest from './pages/resource-request';
 import DefenseManagement from './pages/DefenseManagement';
 import DefenseSchedule from './pages/DefenseSchedule';
 
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user} = useAuth();
-
- 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-}
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -48,38 +38,50 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       
-      <Route path="/" element={<ProtectedRoute>{user ? <Navigate to={`/${user.role}`} replace /> : null}</ProtectedRoute>} />
+      <Route 
+        path="/" 
+        element={
+          <ProtectedRoute>
+            {user ? <Navigate to={`/${user.role}`} replace /> : null}
+          </ProtectedRoute>
+        } 
+      />
 
-      <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<Users />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="schedule" element={<Schedule />} />
-        <Route path="settings" element={<Settings />} />
-        <Route path="defense-management" element={<DefenseManagement />} />
-      </Route>
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/teacher" element={<ProtectedRoute><TeacherLayout /></ProtectedRoute>}>
-        <Route index element={<TeacherDashboard />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="schedule" element={<Schedule />} />
-        <Route path="defense-schedule" element={<DefenseSchedule />} />
-      </Route>
+      <Route
+        path="/teacher/*"
+        element={
+          <ProtectedRoute allowedRoles={['teacher']}>
+            <TeacherLayout />
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/student" element={<ProtectedRoute><StudentLayout /></ProtectedRoute>}>
-        <Route index element={<StudentDashboard />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="schedule" element={<Schedule />} />
-        <Route path="pfe-selection" element={<PfeSelection />} />
-        <Route path="submit-project" element={<SubmitProject />} />
-        <Route path="defense-schedule" element={<DefenseSchedule />} />
-      </Route>
+      <Route
+        path="/student/*"
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <StudentLayout />
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/company" element={<ProtectedRoute><CompanyLayout /></ProtectedRoute>}>
-        <Route index element={<CompanyDashboard />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="project-proposal" element={<ProjectProposal />} />
-      </Route>
+      <Route
+        path="/company/*"
+        element={
+          <ProtectedRoute allowedRoles={['company']}>
+            <CompanyLayout />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

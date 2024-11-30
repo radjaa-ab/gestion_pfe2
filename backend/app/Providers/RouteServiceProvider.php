@@ -2,33 +2,35 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * Le nom du namespace pour les routes.
+     * Le nom du namespace pour les contrôleurs des routes.
      *
      * @var string
      */
     protected $namespace = 'App\\Http\\Controllers';
 
     /**
-     * Enregistrer les routes pour l'application.
+     * Démarrage du fournisseur de services.
      *
      * @return void
      */
     public function boot()
     {
+        $this->configureRateLimiting();
+
         $this->routes(function () {
-            $this->mapApiRoutes();  // Ici, tu appelles mapApiRoutes()
-            $this->mapWebRoutes();  // Appelle aussi la méthode mapWebRoutes() si tu as des routes web
+            $this->mapApiRoutes();
+            $this->mapWebRoutes();
         });
     }
 
     /**
-     * Enregistrer les routes API pour l'application.
+     * Définir les routes API de l'application.
      *
      * @return void
      */
@@ -41,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
-     * Enregistrer les routes web pour l'application.
+     * Définir les routes Web de l'application.
      *
      * @return void
      */
@@ -50,15 +52,5 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
-    }
-
-    /**
-     * Enregistrer les routes pour l'application.
-     *
-     * @return void
-     */
-    public function map()
-    {
-        //
     }
 }
