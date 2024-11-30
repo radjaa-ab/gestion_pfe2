@@ -16,3 +16,7 @@ Route::prefix('api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 });
+
+Route::get('/{any}', function () {
+    return view('app');
+})->where('any', '.*');

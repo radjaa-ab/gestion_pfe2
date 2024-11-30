@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --emptyOutDir && node move-manifest.js",
+    "build": "tsc && vite build --emptyOutDir ",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build-laravel": "vite build && xcopy /E /I dist ..\\backend\\public /Y"

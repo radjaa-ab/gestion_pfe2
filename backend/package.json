@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+          "build:react": "vite build --config vite.config.ts",
+  "build:laravel": "vite build --config vite.config.js"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",
