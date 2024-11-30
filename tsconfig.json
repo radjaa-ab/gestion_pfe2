@@ -13,7 +13,7 @@
     "include": [
       "frontend/**/*",
       "backend/**/*"
-    ],
+, "backend/public/build/.vite/app-BLNVaScB.js"    ],
     "exclude": [
       "node_modules"
     ]

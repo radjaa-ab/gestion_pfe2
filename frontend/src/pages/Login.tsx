@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import axios from 'axios';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState<'admin' | 'teacher' | 'student' | 'company' | ''>('');
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Mock login function for testing
-  const mockLogin = async () => {
-    return new Promise<void>((resolve, reject) => {
-      if (email === 'test@example.com' && password === 'password') {
-        resolve();
-      } else {
-        reject(new Error('Invalid credentials'));
-      }
-    });
-  };
-
-  // Temporary role setter for testing
-  const setRole = (role: 'admin' | 'teacher' | 'student' | 'company') => {
-    localStorage.setItem('role', role); // Use local storage for persistence during testing
-    window.location.href = `/${role}`; // Redirect to the dashboard
-  };
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(`/${user.role}`);
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,12 +42,19 @@ export default function Login() {
     }
 
     try {
-      await mockLogin();
-      setRole(selectedRole);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
+        email,
+        password,
+      });
+
+      login(response.data.user, response.data.access_token);
+
       toast({
         title: 'Login successful',
         description: `Logged in as ${selectedRole}`,
       });
+
+      navigate(`/${selectedRole}`);
     } catch (error) {
       toast({
         title: 'Login failed',
@@ -116,4 +124,6 @@ export default function Login() {
       </Card>
     </div>
   );
-}
+};
+
+export default Login;

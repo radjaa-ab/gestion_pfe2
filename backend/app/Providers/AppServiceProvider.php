@@ -7,20 +7,13 @@ use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function register()
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot()
-{
-    Schema::defaultStringLength(191);  // Set the string length to 191 for MySQL indexes
-}
-
+    {
+        Schema::defaultStringLength(191);
+    }
 }

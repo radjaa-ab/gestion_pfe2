@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PFE Platform</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <title>Laravel</title>
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <div id="root"></div>
-    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
