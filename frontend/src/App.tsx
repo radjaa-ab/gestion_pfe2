@@ -27,7 +27,6 @@ import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
 import DefenseManagement from './pages/DefenseManagement';
 import DefenseSchedule from './pages/DefenseSchedule';
-
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function AppRoutes() {
@@ -37,16 +36,17 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      
-      <Route 
-        path="/" 
+
+      <Route
+        path="/"
         element={
           <ProtectedRoute>
             {user ? <Navigate to={`/${user.role}`} replace /> : null}
           </ProtectedRoute>
-        } 
+        }
       />
 
+      {/* Admin Routes */}
       <Route
         path="/admin/*"
         element={
@@ -55,7 +55,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
+      {/* Teacher Routes */}
       <Route
         path="/teacher/*"
         element={
@@ -64,7 +64,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
+      {/* Student Routes */}
       <Route
         path="/student/*"
         element={
@@ -73,7 +73,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
+      {/* Company Routes */}
       <Route
         path="/company/*"
         element={
@@ -83,6 +83,7 @@ function AppRoutes() {
         }
       />
 
+      {/* Catch-all route for invalid paths */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
@@ -100,4 +101,3 @@ function App() {
 }
 
 export default App;
-
