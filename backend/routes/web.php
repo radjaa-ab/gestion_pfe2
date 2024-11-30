@@ -1,14 +1,7 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-
-// Catch-all route for React frontend
-Route::view('/{path?}', 'app')->where('path', '.*');
-
-// Test route
-Route::get('/test', function () {
-    return 'Test route works!';
-});
 
 // API Routes for login, logout, and user
 Route::prefix('api')->group(function () {
@@ -17,6 +10,8 @@ Route::prefix('api')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
 });
 
+// Catch-all route for React frontend
 Route::get('/{any}', function () {
     return view('app');
 })->where('any', '.*');
+
