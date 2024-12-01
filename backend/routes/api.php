@@ -34,10 +34,10 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->g
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('pfe-proposals', [PfeProposalController::class, 'index']);
-    Route::post('pfe-proposals', [PfeProposalController::class, 'store']);
-    Route::get('pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'show']);
-    Route::put('pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'update']);
-    Route::delete('pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'destroy']);
+    Route::get('/pfe-proposals', [PfeProposalController::class, 'index']);
+    Route::post('/pfe-proposals', [PfeProposalController::class, 'store']);
+    Route::get('/pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'show']);
+    Route::put('/pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'update']);
+    Route::delete('/pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'destroy']);
 });
 
