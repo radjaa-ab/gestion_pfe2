@@ -18,4 +18,4 @@ Route::get('/{any}', function () {
 
 
 
-Route::resource('pfe-proposals', PfeProposalController::class);
+//Route::resource('pfe-proposals', PfeProposalController::class);

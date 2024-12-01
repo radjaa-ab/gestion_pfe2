@@ -4,67 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Models\PfeProposal;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Http\Requests\PfeProposalRequest;
+use Illuminate\Support\Facades\Auth;
 
 class PfeProposalController extends Controller
 {
     public function index()
     {
-        $proposals = PfeProposal::with('user')->get();
-        return Inertia::render('PfeProposals/Index', ['proposals' => $proposals]);
+        $proposals = PfeProposal::where('user_id', Auth::id())->get();
+        return response()->json($proposals);
     }
 
-    public function create()
+    public function store(PfeProposalRequest $request)
     {
-        return Inertia::render('PfeProposals/Create');
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'summary' => 'required|string',
-            'type' => 'required|in:classic,innovative,internship',
-            'option' => 'required|in:GL,IA,RSD,SIC',
-            'technologies' => 'required|string',
-            'material_needs' => 'nullable|string',
-        ]);
-
-        $proposal = auth()->user()->pfeProposals()->create($validated);
-
-        return redirect()->route('pfe-proposals.index')->with('success', 'Proposition created successfully.');
+        $proposal = PfeProposal::create($request->validated() + ['user_id' => Auth::id()]);
+        return response()->json($proposal, 201);
     }
 
     public function show(PfeProposal $pfeProposal)
     {
-        return Inertia::render('PfeProposals/Show', ['proposal' => $pfeProposal->load('user')]);
+        $this->authorize('view', $pfeProposal);
+        return response()->json($pfeProposal);
     }
 
-    public function edit(PfeProposal $pfeProposal)
+    public function update(PfeProposalRequest $request, PfeProposal $pfeProposal)
     {
-        return Inertia::render('PfeProposals/Edit', ['proposal' => $pfeProposal]);
-    }
-
-    public function update(Request $request, PfeProposal $pfeProposal)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'summary' => 'required|string',
-            'type' => 'required|in:classic,innovative,internship',
-            'option' => 'required|in:GL,IA,RSD,SIC',
-            'technologies' => 'required|string',
-            'material_needs' => 'nullable|string',
-        ]);
-
-        $pfeProposal->update($validated);
-
-        return redirect()->route('pfe-proposals.index')->with('success', 'Proposition updated successfully.');
+        $this->authorize('update', $pfeProposal);
+        $pfeProposal->update($request->validated());
+        return response()->json($pfeProposal);
     }
 
     public function destroy(PfeProposal $pfeProposal)
     {
+        $this->authorize('delete', $pfeProposal);
         $pfeProposal->delete();
-
-        return redirect()->route('pfe-proposals.index')->with('success', 'Proposition deleted successfully.');
+        return response()->json(null, 204);
     }
 }

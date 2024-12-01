@@ -42,10 +42,10 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
         'api' => [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, // Vérifie les requêtes côté frontend
-            'throttle:api', // Limitation du nombre de requêtes
-            \Illuminate\Routing\Middleware\SubstituteBindings::class, // Liaison des paramètres de route
-        ],
+        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        'throttle:api',
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
     ];
 
     /**
@@ -64,5 +64,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class, // Validation de la signature de l'URL
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class, // Limitation du nombre de requêtes
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class, // Vérification de l'email
+        'check.proposal.deadline' => \App\Http\Middleware\CheckProposalDeadline::class,
     ];
 }
