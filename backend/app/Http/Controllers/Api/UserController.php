@@ -1,26 +1,32 @@
 <?php
-namespace app\Http\Controllers\Api;
 
-use app\Http\Controllers\Controller;
-use app\Models\User;
-use app\Services\CsvImportService;
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\CsvImportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    protected $csvImportService;
-
-    public function __construct(CsvImportService $csvImportService)
-    {
-        $this->csvImportService = $csvImportService;
-    }
-
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        $users = User::all();
+        $users = User::with('roles')->get();
         return response()->json($users);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -30,25 +36,43 @@ class UserController extends Controller
             'role' => 'required|in:admin,teacher,student,company',
         ]);
 
+        $validatedData['password'] = Hash::make($validatedData['password']);
         $user = User::create($validatedData);
         $user->assignRole($validatedData['role']);
 
-        return response()->json($user, 201);
+        return response()->json($user->load('roles'), 201);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
     public function show(User $user)
     {
-        return response()->json($user);
+        return response()->json($user->load('roles'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, User $user)
     {
         $validatedData = $request->validate([
             'name' => 'string|max:255',
             'email' => 'string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'string|min:8',
+            'password' => 'nullable|string|min:8',
             'role' => 'in:admin,teacher,student,company',
         ]);
+
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
 
         $user->update($validatedData);
 
@@ -56,41 +80,18 @@ class UserController extends Controller
             $user->syncRoles([$validatedData['role']]);
         }
 
-        return response()->json($user);
+        return response()->json($user->load('roles'));
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(User $user)
     {
-        $user->delete();
-        return response()->json(null, 204);
-    }
-
-    public function importCsv(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:csv,txt',
-            'type' => 'required|in:teachers,students,companies',
-        ]);
-
-        $file = $request->file('file');
-        $type = $request->input('type');
-
-        try {
-            switch ($type) {
-                case 'teachers':
-                    $this->csvImportService->importTeachers($file);
-                    break;
-                case 'students':
-                    $this->csvImportService->importStudents($file);
-                    break;
-                case 'companies':
-                    $this->csvImportService->importCompanies($file);
-                    break;
-            }
-
-            return response()->json(['message' => 'Import successful'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Import failed: ' . $e->getMessage()], 500);
-        }
+        //
     }
 }
+

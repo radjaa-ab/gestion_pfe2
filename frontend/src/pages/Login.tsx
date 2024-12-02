@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import axios from 'axios';
 import {
   Select,
   SelectContent,
@@ -22,7 +21,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       navigate(`/${user.role}`);
@@ -42,12 +40,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
-        email,
-        password,
-      });
-
-      login(response.data.user, response.data.access_token);
+      await login(email, password);
 
       toast({
         title: 'Login successful',
@@ -127,3 +120,4 @@ const Login = () => {
 };
 
 export default Login;
+
