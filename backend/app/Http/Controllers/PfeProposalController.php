@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PfeProposal;
+use App\Models\PfeProposal;                   
 use Illuminate\Http\Request;
 use App\Http\Requests\PfeProposalRequest;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +15,17 @@ class PfeProposalController extends Controller
         return response()->json($proposals);
     }
 
-    public function store(PfeProposalRequest $request)
+    public function store(Request $request)
     {
-        $proposal = PfeProposal::create($request->validated() + ['user_id' => Auth::id()]);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'technologies' => 'required|string',
+            'material_needs' => 'required|string',
+        ]);
+    
+        $proposal = PfeProposal::create($validated);
+    
         return response()->json($proposal, 201);
     }
 

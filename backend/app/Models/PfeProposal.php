@@ -17,7 +17,6 @@ class PfeProposal extends Model
         'option',
         'technologies',
         'material_needs',
-        'status',
     ];
 
     public function user()
