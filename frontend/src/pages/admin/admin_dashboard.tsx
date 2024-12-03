@@ -11,6 +11,10 @@ import { useToast } from "@/hooks/use-toast"
 import { Users, FileText, Bell, Upload } from 'lucide-react'
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { UserDistributionChart } from '@/components/charts/UserDistributionChart'
+import { PfeDistributionChart } from '@/components/charts/PfeDistributionChart'
+import { ProposalStatusChart } from '@/components/charts/ProposalStatusChart'
+import { StudentsPfeByOptionChart } from '@/components/charts/StudentsPfeByOptionChart'
 
 type UserBase = {
   id: number;
@@ -127,6 +131,33 @@ export default function AdminDashboard() {
       specialite: value,
     }));
   };
+
+  // Sample data for the charts
+  const userDistributionData = [
+    { name: 'Students', value: 300 },
+    { name: 'Teachers', value: 50 },
+    { name: 'Companies', value: 30 },
+  ];
+
+  const pfeDistributionData = [
+    { name: 'Classic', value: 100 },
+    { name: 'Innovative', value: 50 },
+    { name: 'Company Internship', value: 80 },
+  ];
+
+  const proposalStatusData = [
+    { name: 'Validated', value: 150 },
+    { name: 'Rejected', value: 30 },
+    { name: 'Pending Modification', value: 50 },
+  ];
+
+  const studentsPfeByOptionData = [
+    { option: 'GL', students: 100, proposals: 120 },
+    { option: 'IA', students: 80, proposals: 90 },
+    { option: 'RSD', students: 70, proposals: 85 },
+    { option: 'SIC', students: 60, proposals: 70 },
+  ];
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h2>
@@ -168,6 +199,41 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>User Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UserDistributionChart data={userDistributionData} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>PFE Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PfeDistributionChart data={pfeDistributionData} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Proposal Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ProposalStatusChart data={proposalStatusData} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Students and PFE Proposals by Option</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <StudentsPfeByOptionChart data={studentsPfeByOptionData} />
           </CardContent>
         </Card>
       </div>
@@ -360,3 +426,4 @@ export default function AdminDashboard() {
     </div>
   )
 }
+

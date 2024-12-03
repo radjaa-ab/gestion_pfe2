@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PfeProposalController;
 
 // API Routes for login, logout, and user
 Route::prefix('api')->group(function () {
@@ -16,6 +15,3 @@ Route::get('/{any}', function () {
     return view('app');
 })->where('any', '.*');
 
-
-
-//Route::resource('pfe-proposals', PfeProposalController::class);

@@ -11,7 +11,6 @@ class TestUsersSeeder extends Seeder
 {
     public function run()
     {
-        // Create roles
         $roles = ['student', 'teacher', 'company', 'admin'];
         foreach ($roles as $role) {
             Role::create(['name' => $role]);
@@ -54,3 +53,4 @@ class TestUsersSeeder extends Seeder
         }
     }
 }
+

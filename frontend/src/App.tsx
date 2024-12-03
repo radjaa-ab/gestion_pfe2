@@ -1,13 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from './contexts/AuthContext';
-import { useAuth } from './hooks/useAuth';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AdminLayout from './layouts/AdminLayout';
 import TeacherLayout from './layouts/TeacherLayout';
 import StudentLayout from './layouts/StudentLayout';
 import CompanyLayout from './layouts/CompanyLayout';
-import Login from './pages/Login';
 import AdminDashboard from './pages/admin/admin_dashboard';
 import TeacherDashboard from './pages/teacher/teacher-dashboard';
 import StudentDashboard from './pages/student/student-dashboard';
@@ -27,77 +23,49 @@ import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
 import DefenseManagement from './pages/DefenseManagement';
 import DefenseSchedule from './pages/DefenseSchedule';
-import { ProtectedRoute } from './components/ProtectedRoute';
-
-function AppRoutes() {
-  const { user } = useAuth();
-
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            {user ? <Navigate to={`/${user.role}`} replace /> : null}
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Admin Routes */}
-      <Route
-        path="/admin/*"
-        element={
-          <ProtectedRoute allowedRoles={['admin']}>
-            <AdminLayout />
-          </ProtectedRoute>
-        }
-      />
-      {/* Teacher Routes */}
-      <Route
-        path="/teacher/*"
-        element={
-          <ProtectedRoute allowedRoles={['teacher']}>
-            <TeacherLayout />
-          </ProtectedRoute>
-        }
-      />
-      {/* Student Routes */}
-      <Route
-        path="/student/*"
-        element={
-          <ProtectedRoute allowedRoles={['student']}>
-            <StudentLayout />
-          </ProtectedRoute>
-        }
-      />
-      {/* Company Routes */}
-      <Route
-        path="/company/*"
-        element={
-          <ProtectedRoute allowedRoles={['company']}>
-            <CompanyLayout />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Catch-all route for invalid paths */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-  );
-}
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Toaster />
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+    <Router>
+      <Routes>
+        {/* General Pages */}
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/schedule" element={<Schedule />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/feedback-submission" element={<FeedbackSubmission />} />
+        <Route path="/progress-report" element={<ProgressReport />} />
+        <Route path="/project-proposal" element={<ProjectProposal />} />
+        <Route path="/submit-project" element={<SubmitProject />} />
+        <Route path="/team-formation" element={<TeamFormation />} />
+        <Route path="/pfe-selection" element={<PfeSelection />} />
+        <Route path="/resource-request" element={<ResourceRequest />} />
+        <Route path="/defense-management" element={<DefenseManagement />} />
+        <Route path="/defense-schedule" element={<DefenseSchedule />} />
+
+        {/* Admin Pages */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="schedule" element={<Schedule />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
+        {/* Teacher Pages */}
+        <Route path="/teacher/*" element={<TeacherLayout />} />
+
+        {/* Student Pages */}
+        <Route path="/student/*" element={<StudentLayout />} />
+
+        {/* Company Pages */}
+        <Route path="/company/*" element={<CompanyLayout />} />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
+

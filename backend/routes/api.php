@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-use App\Http\Controllers\PfeProposalController;
 
 
 
@@ -30,14 +29,6 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->g
     return $request->user();
 });
 
-////
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/pfe-proposals', [PfeProposalController::class, 'index']);
-    Route::post('/pfe-proposals', [PfeProposalController::class, 'store']);
-    Route::get('/pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'show']);
-    Route::put('/pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'update']);
-    Route::delete('/pfe-proposals/{pfeProposal}', [PfeProposalController::class, 'destroy']);
-});
 
