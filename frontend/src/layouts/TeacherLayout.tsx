@@ -2,29 +2,35 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
 import { Header } from '../components/header';
-import { Home } from '@mui/icons-material';
-import { FileText, Calendar, MessageSquare, ClipboardList, FileSignature } from 'lucide-react';
+import { 
+  Home, 
+  Description as FileText, 
+  Event as Calendar, 
+  Message as MessageSquare, 
+  Assignment as ClipboardList, 
+  NoteAdd as FileSignature 
+} from '@mui/icons-material';
 
 const teacherMenuItems = [
   { label: "Dashboard", icon: Home, link: "/teacher" },
-  { label: "Projects", icon: FileText, link: "/projects" },
-  { label: "Schedule", icon: Calendar, link: "/schedule" },
-  { label: "Feedback", icon: MessageSquare, link: "/feedback-submission" },
-  { label: "Progress Reports", icon: ClipboardList, link: "/progress-report" },
-  { label: "Project Proposals", icon: FileSignature, link: "/project-proposal" },
-  
+  { label: "Projects", icon: FileText, link: "/teacher/projects" },
+  { label: "Schedule", icon: Calendar, link: "/teacher/schedule" },
+  { label: "Feedback", icon: MessageSquare, link: "/teacher/feedback-submission" },
+  { label: "Progress Reports", icon: ClipboardList, link: "/teacher/progress-report" },
+  { label: "Project Proposals", icon: FileSignature, link: "/teacher/project-proposal" },
 ];
 
 export default function TeacherLayout() {
   return (
-    <div className="flex h-screen flex-col bg-gray-100">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#f5f5f5' }}>
       <Header />
-      <div className="flex flex-1">
+      <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar menuItems={teacherMenuItems} />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
           <Outlet />
         </main>
       </div>
     </div>
   );
 }
+
