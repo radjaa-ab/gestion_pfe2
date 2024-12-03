@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -15,7 +12,6 @@ import { FileText, Users, Calendar } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StatusBadge } from '../../components/status-badge'
 import { Project } from '../types'
-
 
 export default function TeacherDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
@@ -250,4 +246,3 @@ export default function TeacherDashboard() {
     </div>
   )
 }
-

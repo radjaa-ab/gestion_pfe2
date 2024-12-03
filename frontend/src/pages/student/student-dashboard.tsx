@@ -325,7 +325,7 @@ export default function StudentDashboard() {
                 <TableHead>Description</TableHead>
                 <TableHead>Proposed By</TableHead>
                 <TableHead>Status</TableHead>
-</TableRow>
+              </TableRow>
             </TableHeader>
             <TableBody>
               {teacherProjects.map((project) => (

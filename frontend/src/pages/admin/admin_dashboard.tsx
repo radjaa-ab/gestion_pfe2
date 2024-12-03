@@ -303,9 +303,6 @@ export default function AdminDashboard() {
                               </SelectContent>
                             </Select>
                           </div>
-
-                     
-
                         <div className="space-y-2">
                           <Label htmlFor="moyenne">Moyenne</Label>
                           <Input id="moyenne" name="moyenne" type="number" step="0.01" value={(newUser as Student).moyenne || ''} onChange={handleInputChange} required />
@@ -426,4 +423,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-
