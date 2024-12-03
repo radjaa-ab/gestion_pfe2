@@ -1,14 +1,17 @@
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProgressReport() {
+  const [count, setCount] = useState(0);
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Progress Report</h2>
+      
       <Card>
         <CardHeader>
           <CardTitle>Submit Progress Report</CardTitle>
@@ -35,7 +38,11 @@ export default function ProgressReport() {
           </form>
         </CardContent>
       </Card>
+      
+      <div className="mt-6">
+        <p>You clicked {count} times</p>
+        <Button onClick={() => setCount(count + 1)}>Click me</Button>
+      </div>
     </div>
-  )
+  );
 }
-
