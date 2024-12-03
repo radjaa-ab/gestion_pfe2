@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AdminLayout from './layouts/AdminLayout';
 import TeacherLayout from './layouts/TeacherLayout';
@@ -18,7 +17,8 @@ import ProjectProposal from './pages/project-proposal';
 import SubmitProject from './pages/submit-project';
 import TeamFormation from './pages/team-formation';
 import PfeSelection from './pages/PfeSelection';
-import Register from './pages/Register';
+// Remove this line
+//import Register from './pages/Register';
 import ResourceRequest from './pages/resource-request';
 import DefenseManagement from './pages/DefenseManagement';
 import DefenseSchedule from './pages/DefenseSchedule';
