@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PfeProposalController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,6 +25,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('pfe-proposals', PfeProposalController::class);
 });
 
-
-
-//Route::resource('pfe-proposals', PfeProposalController::class);

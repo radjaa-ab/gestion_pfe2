@@ -8,11 +8,7 @@
       "strict": true,
       "esModuleInterop": true,
       "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
-      "baseUrl": "src",  // Assurez-vous que le répertoire 'src' est défini comme base
-      "paths": {
-        "@/*": ["./*"]  // Déclare l'alias '@' pour le dossier 'src'
-      }
+      "forceConsistentCasingInFileNames": true
     },
     "include": [
       "frontend/**/*",

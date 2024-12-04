@@ -12,26 +12,6 @@ import {
   Button as MuiButton,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {
-  Home,
-  People as Users,
-  Description as FileText,
-  Event as Calendar,
-  Settings,
-  Message as MessageSquare,
-  Assignment as ClipboardList,
-  NoteAdd as FileSignature,
-  PersonAdd as UserPlus,
-  Inventory as Package,
-  AccessTime as Clock,
-  CloudUpload as Upload,
-  Star,
-  Group,
-  Person,
-  Notifications,
-  Mail,
-  MenuBook as Book,
-} from '@mui/icons-material';
 import { useAuth } from '../hooks/useAuth';
 
 // Styled Drawer for the Sidebar
@@ -62,10 +42,9 @@ const StyledListItemButton = styled(ListItemButton)<{
   },
 }));
 
-// Define a type for the menuItems prop
 interface MenuItem {
   label: string;
-  icon: React.ElementType; // The icon will be a React component
+  icon: React.ElementType;
   link: string;
 }
 
@@ -113,3 +92,4 @@ export function Sidebar({ menuItems }: SidebarProps) {
     </StyledDrawer>
   );
 }
+

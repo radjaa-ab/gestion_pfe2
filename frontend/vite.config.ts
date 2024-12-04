@@ -5,22 +5,9 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: '../backend/public/build',
+    outDir: path.resolve(__dirname, '../backend/public/build'),
     emptyOutDir: true,
     manifest: true,
-    rollupOptions: {
-      input: path.resolve(__dirname, 'src/main.tsx'),
-    },
-  },
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
   },
   resolve: {
     alias: {

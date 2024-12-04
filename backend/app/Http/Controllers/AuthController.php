@@ -10,32 +10,12 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function __construct(AuthService $authService)
-    {
-        $this->authService = $authService;
-    }
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-          
-        $user = $this->authService->register([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'role' => 'user', // Ajoutez un rôle par défaut si nécessaire
-        ]);
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
-
+    /**
+     * Login the user and return an access token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -43,27 +23,80 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $result = $this->authService->login($request->only('email', 'password'));
-        if (!$result) {
-            throw ValidationException::withMessages([
-                'email' => ['Les informations didentification fournies sont incorrectes.'],
+        // Attempt to authenticate the user
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+
+            // Load role-specific data
+            switch ($user->role) {
+                case 'teacher':
+                    $user->load('teacher');
+                    break;
+                case 'student':
+                    $user->load('student');
+                    break;
+                case 'company':
+                    $user->load('company');
+                    break;
+            }
+
+            // Load roles relationship
+            $user->load('roles');
+
+            // Generate API token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user,
             ]);
         }
 
-        return response()->json([
-            'user' => $result['user'],
-            'token' => $result['token'],
+        // Return error if credentials are invalid
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
         ]);
     }
 
+    /**
+     * Logout the user by deleting the current access token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
-        $this->authService->logout();
+        // Revoke the current access token
+        $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Déconnexion réussie']);
+        return response()->json(['message' => 'Logged out successfully']);
     }
+
+    /**
+     * Return the authenticated user's data.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function user(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user();
+
+        // Load role-specific data
+        switch ($user->role) {
+            case 'teacher':
+                $user->load('teacher');
+                break;
+            case 'student':
+                $user->load('student');
+                break;
+            case 'company':
+                $user->load('company');
+                break;
+        }
+
+        // Load roles relationship and return the user data
+        return response()->json($user->load('roles'));
     }
 }
