@@ -6,7 +6,29 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    // ... other code ...
+
+    use HasApiTokens, HasRoles , Notifiable,HasFactory;
+    
+ 
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+
 
     public function teacher()
     {
@@ -43,6 +65,6 @@ class User extends Authenticatable
         return null;
     }
 
-    // ... other code ...
+
 }
 

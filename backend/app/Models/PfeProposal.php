@@ -14,6 +14,7 @@ class PfeProposal extends Model
         'material_needs',
         'proposer_id',
         'is_validated'
+
     ];
 
     protected $casts = [

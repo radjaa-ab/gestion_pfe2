@@ -17,7 +17,6 @@ import ProjectProposal from './pages/project-proposal';
 import SubmitProject from './pages/submit-project';
 import TeamFormation from './pages/team-formation';
 import PfeSelection from './pages/PfeSelection';
-import Register from './pages/register';
 import ResourceRequest from './pages/resource-request';
 import DefenseManagement from './pages/DefenseManagement';
 import DefenseSchedule from './pages/DefenseSchedule';
