@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import LoadingPage from './LoadingPage';
 
 interface PrivateRouteProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingPage message="Authenticating..." />;
   }
 
   if (!user) {
