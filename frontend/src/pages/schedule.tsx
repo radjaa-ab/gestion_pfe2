@@ -1,192 +1,139 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, X } from 'lucide-react'
+import api from '../services/api'
 
-interface ScheduleNotification {
-  id: number;
-  type: 'default' | 'destructive';
-  message: string;
-}
-
-interface Event {
+interface PfeEvent {
   id: number;
   title: string;
-  date: Date;
-  type: 'meeting' | 'deadline' | 'presentation';
+  deadline: Date;
 }
 
+const standardEvents = [
+  { title: "Student Project Selection", id: "student_selection" },
+  { title: "Teacher Validation of Student Choices", id: "teacher_validation" },
+  { title: "Teacher Selection of Students to Supervise", id: "teacher_selection" },
+  { title: "Jury Selection", id: "jury_selection" },
+  { title: "Project Proposal Submission", id: "project_proposal" },
+  { title: "Mid-term Report Submission", id: "midterm_report" },
+  { title: "Final Report Submission", id: "final_report" },
+  { title: "Defense Presentation", id: "defense_presentation" },
+]
+
 export default function Schedule() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [events, setEvents] = useState<Event[]>([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [newEvent, setNewEvent] = useState<Omit<Event, 'id'>>({
-    title: '',
-    date: new Date(),
-    type: 'meeting'
-  })
-  const [scheduleNotifications, setScheduleNotifications] = useState<ScheduleNotification[]>([])
+  const [events, setEvents] = useState<PfeEvent[]>([])
+  const [selectedEvent, setSelectedEvent] = useState(standardEvents[0])
+  const [deadline, setDeadline] = useState<Date | undefined>(new Date())
   const { toast } = useToast()
 
   useEffect(() => {
-    // Simulating fetching schedule notifications and events
-    const fetchedNotifications: ScheduleNotification[] = [
-      { id: 1, type: 'default', message: 'New event added to your schedule.' },
-      { id: 2, type: 'destructive', message: 'Scheduling conflict detected.' },
-    ]
-    setScheduleNotifications(fetchedNotifications)
-
-    const fetchedEvents: Event[] = [
-      { id: 1, title: 'Team Meeting', date: new Date('2023-10-15'), type: 'meeting' },
-      { id: 2, title: 'Project Deadline', date: new Date('2023-10-31'), type: 'deadline' },
-    ]
-    setEvents(fetchedEvents)
+    fetchEvents()
   }, [])
 
-  const handleDismissNotification = (id: number) => {
-    setScheduleNotifications(prev => prev.filter(notification => notification.id !== id))
-    toast({
-      title: "Notification dismissed",
-      description: "The schedule notification has been removed.",
-    })
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setNewEvent(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      setNewEvent(prev => ({ ...prev, date }))
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get('/pfe-events')
+      setEvents(response.data)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch PFE events",
+        variant: "destructive",
+      })
     }
   }
 
-  const handleTypeChange = (value: 'meeting' | 'deadline' | 'presentation') => {
-    setNewEvent(prev => ({ ...prev, type: value }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const id = events.length + 1
-    setEvents(prev => [...prev, { id, ...newEvent }])
-    toast({
-      title: "Event added",
-      description: `${newEvent.title} has been successfully added to the schedule.`,
-    })
-    setIsDialogOpen(false)
-    setNewEvent({ title: '', date: new Date(), type: 'meeting' })
-  }
-
-  const handleDeleteEvent = (id: number) => {
-    setEvents(prev => prev.filter(event => event.id !== id))
-    toast({
-      title: "Event removed",
-      description: "The event has been removed from the schedule.",
-      variant: "destructive",
-    })
+    if (!deadline) {
+      toast({
+        title: "Error",
+        description: "Please select a deadline",
+        variant: "destructive",
+      })
+      return
+    }
+    try {
+      const newEvent = {
+        title: selectedEvent.title,
+        deadline,
+      }
+      const response = await api.post('/pfe-events', newEvent)
+      setEvents(prevEvents => [...prevEvents, response.data])
+      toast({
+        title: "Success",
+        description: "PFE event scheduled successfully",
+      })
+      setDeadline(new Date())
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to schedule PFE event",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Schedule</h2>
-      
-      {scheduleNotifications.map((notification) => (
-        <Alert key={notification.id} variant={notification.type}>
-          <AlertTitle>{notification.type === 'destructive' ? 'Error' : 'Info'}</AlertTitle>
-          <AlertDescription>{notification.message}</AlertDescription>
-          <Button variant="outline" size="sm" onClick={() => handleDismissNotification(notification.id)}>
-            Dismiss
-          </Button>
-        </Alert>
-      ))}
-
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold">Calendar</h3>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Event
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Event</DialogTitle>
-            </DialogHeader>
+      <h2 className="text-3xl font-bold">PFE Schedule Management</h2>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Schedule PFE Event</CardTitle>
+          </CardHeader>
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Event Title</Label>
-                <Input id="title" name="title" value={newEvent.title} onChange={handleInputChange} required />
+                <label htmlFor="event-select" className="block text-sm font-medium text-gray-700">Select Event</label>
+                <select
+                  id="event-select"
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  value={selectedEvent.id}
+                  onChange={(e) => setSelectedEvent(standardEvents.find(event => event.id === e.target.value) || standardEvents[0])}
+                >
+                  {standardEvents.map((event) => (
+                    <option key={event.id} value={event.id}>{event.title}</option>
+                  ))}
+                </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date">Event Date</Label>
+                <label className="block text-sm font-medium text-gray-700">Deadline</label>
                 <Calendar
                   mode="single"
-                  selected={newEvent.date}
-                  onSelect={handleDateChange}
+                  selected={deadline}
+                  onSelect={setDeadline}
                   className="rounded-md border"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="type">Event Type</Label>
-                <Select onValueChange={handleTypeChange} value={newEvent.type}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select event type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="meeting">Meeting</SelectItem>
-                    <SelectItem value="deadline">Deadline</SelectItem>
-                    <SelectItem value="presentation">Presentation</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button type="submit">Add Event</Button>
-              </div>
+              <Button type="submit">Schedule Event</Button>
             </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-background border border-border">
-          <CardContent className="pt-6">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md border border-border"
-            />
           </CardContent>
         </Card>
-        <Card className="bg-background border border-border">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-foreground">Upcoming Events</CardTitle>
+            <CardTitle>PFE Timeline</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-4">
-              {events.map((event) => (
-                <li key={event.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-foreground">{event.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {event.date.toLocaleDateString()} - {event.type}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={() => handleDeleteEvent(event.id)}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Deadline</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {events.map((event) => (
+                  <TableRow key={event.id}>
+                    <TableCell>{event.title}</TableCell>
+                    <TableCell>{new Date(event.deadline).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
