@@ -3,19 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-
-    use HasApiTokens, HasRoles , Notifiable,HasFactory;
-    
- 
+    use HasApiTokens, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role'
+        'role',
     ];
 
     protected $hidden = [
@@ -25,46 +24,20 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
     ];
 
-
-
-    public function teacher()
+    public function etudiant()
     {
-        return $this->hasOne(Teacher::class);
+        return $this->hasOne(Etudiant::class);
     }
 
-    public function student()
+    public function enseignant()
     {
-        return $this->hasOne(Student::class);
+        return $this->hasOne(Enseignant::class);
     }
 
-    public function company()
+    public function entreprise()
     {
-        return $this->hasOne(Company::class);
+        return $this->hasOne(Entreprise::class);
     }
-
-
-    public function hasRole($role)
-    {
-        //Implementation to check if user has a specific role
-        //This is a placeholder, replace with your actual role checking logic.
-        return in_array($role, $this->roles); //Example: Assuming $this->roles is an array of roles.
-    }
-
-    public function roleModel()
-    {
-        if ($this->hasRole('teacher')) {
-            return $this->teacher();
-        } elseif ($this->hasRole('student')) {
-            return $this->student();
-        } elseif ($this->hasRole('company')) {
-            return $this->company();
-        }
-        return null;
-    }
-
-
 }
-
