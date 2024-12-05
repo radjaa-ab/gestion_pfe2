@@ -56,6 +56,14 @@ export function Sidebar({ menuItems }: SidebarProps) {
   const location = useLocation();
   const { logout } = useAuth();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <StyledDrawer variant="permanent" anchor="left">
       <Toolbar />
@@ -83,7 +91,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
         <MuiButton
           variant="outlined"
           fullWidth
-          onClick={logout}
+          onClick={handleLogout}
           style={{ color: 'inherit', borderColor: 'inherit' }}
         >
           Logout

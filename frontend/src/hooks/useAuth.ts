@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api, { login as apiLogin, logout as apiLogout, register as apiRegister } from '../services/api';
 
 interface User {
@@ -11,6 +12,7 @@ interface User {
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,14 +32,16 @@ export const useAuth = () => {
     fetchUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     try {
       const data = await apiLogin(email, password);
-      setUser(data.user);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      return data.user;
+      const loggedInUser = data.user;
+      setUser(loggedInUser);
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
     } catch (error) {
-      throw new Error('Login failed');
+      console.error('Login failed:', error);
+      throw error;
     }
   };
 
@@ -47,18 +51,22 @@ export const useAuth = () => {
       setUser(null);
       localStorage.removeItem('user');
       localStorage.removeItem('token');
+      navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
-  const register = async (userData: { name: string, email: string, password: string, role: string }) => {
+  const register = async (userData: { name: string, email: string, password: string, role: string }): Promise<User> => {
     try {
       const data = await apiRegister(userData);
-      setUser(data.user);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      return data.user;
+      const registeredUser = data.user;
+      setUser(registeredUser);
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(registeredUser));
+      return registeredUser;
     } catch (error) {
+      console.error('Registration failed:', error);
       throw new Error('Registration failed');
     }
   };

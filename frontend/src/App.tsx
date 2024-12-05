@@ -10,20 +10,6 @@ import AdminDashboard from './pages/admin/admin_dashboard';
 import TeacherDashboard from './pages/teacher/teacher-dashboard';
 import StudentDashboard from './pages/student/student-dashboard';
 import CompanyDashboard from './pages/company/company-dashboard';
-import Users from './pages/users';
-import Projects from './pages/projects';
-import Schedule from './pages/schedule';
-import Settings from './pages/settings';
-import FeedbackSubmission from './pages/feedback-submission';
-import ProgressReport from './pages/progress-report';
-import ProjectProposal from './pages/project-proposal';
-import SubmitProject from './pages/submit-project';
-import TeamFormation from './pages/team-formation';
-import PfeSelection from './pages/PfeSelection';
-import ResourceRequest from './pages/resource-request';
-import DefenseManagement from './pages/DefenseManagement';
-import DefenseSchedule from './pages/DefenseSchedule';
-import Notifications from './pages/Notifications';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './components/Dashboard';
@@ -51,13 +37,6 @@ const router = createBrowserRouter([
     element: <PrivateRoute><AdminLayout /></PrivateRoute>,
     children: [
       { index: true, element: <AdminDashboard /> },
-      { path: "users", element: <Users /> },
-      { path: "projects", element: <Projects /> },
-      { path: "schedule", element: <Schedule /> },
-      { path: "settings", element: <Settings /> },
-      { path: "defense-management", element: <DefenseManagement /> },
-      { path: "defense-schedule", element: <DefenseSchedule /> },
-      { path: "notifications", element: <Notifications /> },
     ],
   },
   {
@@ -65,12 +44,6 @@ const router = createBrowserRouter([
     element: <PrivateRoute><TeacherLayout /></PrivateRoute>,
     children: [
       { index: true, element: <TeacherDashboard /> },
-      { path: "projects", element: <Projects /> },
-      { path: "schedule", element: <Schedule /> },
-      { path: "feedback-submission", element: <FeedbackSubmission /> },
-      { path: "progress-report", element: <ProgressReport /> },
-      { path: "project-proposal", element: <ProjectProposal /> },
-      { path: "notifications", element: <Notifications /> },
     ],
   },
   {
@@ -78,13 +51,6 @@ const router = createBrowserRouter([
     element: <PrivateRoute><StudentLayout /></PrivateRoute>,
     children: [
       { index: true, element: <StudentDashboard /> },
-      { path: "pfe-selection", element: <PfeSelection /> },
-      { path: "submit-project", element: <SubmitProject /> },
-      { path: "team-formation", element: <TeamFormation /> },
-      { path: "progress-report", element: <ProgressReport /> },
-      { path: "resource-request", element: <ResourceRequest /> },
-      { path: "notifications", element: <Notifications /> },
-      { path: "feedback-submission", element: <FeedbackSubmission /> },
     ],
   },
   {
@@ -92,8 +58,6 @@ const router = createBrowserRouter([
     element: <PrivateRoute><CompanyLayout /></PrivateRoute>,
     children: [
       { index: true, element: <CompanyDashboard /> },
-      { path: "project-proposal", element: <ProjectProposal /> },
-      { path: "notifications", element: <Notifications /> },
     ],
   },
   {
@@ -106,15 +70,11 @@ function App() {
   return (
     <AuthProvider>
       <SidebarProvider>
-        <RouterProvider 
-          router={router} 
-          />
+        <RouterProvider router={router} />
       </SidebarProvider>
     </AuthProvider>
   );
 }
-
-// TODO: Update @types/react-router-dom when a new version is available that includes the 'future' prop type
 
 export default App;
 

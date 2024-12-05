@@ -46,7 +46,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export function Header() {
-  const { logout } = useAuth(); // Use the logout function from the auth hook
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -84,7 +92,7 @@ export function Header() {
         </Search>
 
         {/* Logout Button */}
-        <Button onClick={logout} color="inherit" sx={{ marginLeft: 'auto' }}>
+        <Button onClick={handleLogout} color="inherit" sx={{ marginLeft: 'auto' }}>
           Logout
         </Button>
 
@@ -104,3 +112,4 @@ export function Header() {
     </AppBar>
   );
 }
+

@@ -5,33 +5,64 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Add a request interceptor to include the CSRF token and Bearer token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN'))?.split('=')[1];
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers['X-XSRF-TOKEN'] = decodeURIComponent(token);
   }
+
+  const authToken = localStorage.getItem('token');
+  if (authToken) {
+    config.headers['Authorization'] = `Bearer ${authToken}`;
+  }
+
   return config;
 });
 
-export const login = async (email: string, password: string) => {
-  const response = await api.post('/login', { email, password });
-  if (response.data.access_token) {
-    localStorage.setItem('token', response.data.access_token);
+// Add a response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      console.error('Response error:', error.response.data);
+    } else if (error.request) {
+      console.error('Request error:', error.request);
+    } else {
+      console.error('Error:', error.message);
+    }
+    return Promise.reject(error);
   }
-  return response.data;
+);
+
+export const login = async (email: string, password: string) => {
+  try {
+    const response = await api.post('/login', { email, password });
+    console.log('Login response:', response.data); // Debug log
+    return response.data;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
 };
 
 export const logout = async () => {
-  await api.post('/logout');
-  localStorage.removeItem('token');
+  try {
+    await api.post('/logout');
+    localStorage.removeItem('token');
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
 };
 
 export const register = async (userData: { name: string, email: string, password: string, role: string }) => {
-  const response = await api.post('/register', userData);
-  if (response.data.access_token) {
-    localStorage.setItem('token', response.data.access_token);
+  try {
+    const response = await api.post('/register', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
   }
-  return response.data;
 };
 
 export default api;
