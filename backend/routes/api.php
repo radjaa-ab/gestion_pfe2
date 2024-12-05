@@ -31,13 +31,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
 
     // Student routes
-    Route::apiResource('students', studentController::class);
+    Route::apiResource('students', StudentController::class);
 
     // Teacher routes
-    Route::apiResource('teachers', teacherController::class);
+    Route::apiResource('teachers', TeacherController::class);
 
     // Company routes
-    Route::apiResource('companys', companyController::class);
+    Route::apiResource('companys', CompanyController::class);
 
     // PFE routes
     Route::apiResource('pfes', PFEController::class);
