@@ -1,17 +1,8 @@
-//import React from 'react';
+
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
 import { Header } from '../components/header';
-import { 
-  Home, 
-  Description as FileText, 
-  Event as Calendar, 
-  Assignment as ClipboardList, 
-  NoteAdd as FileSignature, 
-  Group as Users, 
-  CloudUpload as Upload, 
-  Star 
-} from '@mui/icons-material';
+import { Home, FileText, Calendar, ClipboardList, FileSignature, Users, Upload, Star } from 'lucide-react';
 
 const studentMenuItems = [
   { label: "Dashboard", icon: Home, link: "/student" },
@@ -26,11 +17,11 @@ const studentMenuItems = [
 
 export default function StudentLayout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#f5f5f5' }}>
+    <div className="flex h-screen bg-gray-100 flex-col">
       <Header />
-      <div style={{ display: 'flex', flex: 1 }}>
+      <div className="flex flex-1">
         <Sidebar menuItems={studentMenuItems} />
-        <main style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+        <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
       </div>

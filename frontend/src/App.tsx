@@ -1,4 +1,7 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { SidebarProvider } from './components/SidebarProvider';
+import PrivateRoute from './components/PrivateRoute';
 import AdminLayout from './layouts/AdminLayout';
 import TeacherLayout from './layouts/TeacherLayout';
 import StudentLayout from './layouts/StudentLayout';
@@ -17,67 +20,101 @@ import ProjectProposal from './pages/project-proposal';
 import SubmitProject from './pages/submit-project';
 import TeamFormation from './pages/team-formation';
 import PfeSelection from './pages/PfeSelection';
-//import Register from './pages/register';
-
 import ResourceRequest from './pages/resource-request';
 import DefenseManagement from './pages/DefenseManagement';
 import DefenseSchedule from './pages/DefenseSchedule';
 import Notifications from './pages/Notifications';
-import RoleSelection from './pages/RoleSelection';
-//import Dashboard from './pages';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './components/Dashboard';
+import NotFound from './pages/NotFound';
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Navigate to="/login" />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/dashboard",
+    element: <PrivateRoute><Dashboard /></PrivateRoute>,
+  },
+  {
+    path: "/admin",
+    element: <PrivateRoute><AdminLayout /></PrivateRoute>,
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: "users", element: <Users /> },
+      { path: "projects", element: <Projects /> },
+      { path: "schedule", element: <Schedule /> },
+      { path: "settings", element: <Settings /> },
+      { path: "defense-management", element: <DefenseManagement /> },
+      { path: "defense-schedule", element: <DefenseSchedule /> },
+      { path: "notifications", element: <Notifications /> },
+    ],
+  },
+  {
+    path: "/teacher",
+    element: <PrivateRoute><TeacherLayout /></PrivateRoute>,
+    children: [
+      { index: true, element: <TeacherDashboard /> },
+      { path: "projects", element: <Projects /> },
+      { path: "schedule", element: <Schedule /> },
+      { path: "feedback-submission", element: <FeedbackSubmission /> },
+      { path: "progress-report", element: <ProgressReport /> },
+      { path: "project-proposal", element: <ProjectProposal /> },
+      { path: "notifications", element: <Notifications /> },
+    ],
+  },
+  {
+    path: "/student",
+    element: <PrivateRoute><StudentLayout /></PrivateRoute>,
+    children: [
+      { index: true, element: <StudentDashboard /> },
+      { path: "pfe-selection", element: <PfeSelection /> },
+      { path: "submit-project", element: <SubmitProject /> },
+      { path: "team-formation", element: <TeamFormation /> },
+      { path: "progress-report", element: <ProgressReport /> },
+      { path: "resource-request", element: <ResourceRequest /> },
+      { path: "notifications", element: <Notifications /> },
+      { path: "feedback-submission", element: <FeedbackSubmission /> },
+    ],
+  },
+  {
+    path: "/company",
+    element: <PrivateRoute><CompanyLayout /></PrivateRoute>,
+    children: [
+      { index: true, element: <CompanyDashboard /> },
+      { path: "project-proposal", element: <ProjectProposal /> },
+      { path: "notifications", element: <Notifications /> },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Role Selection Page */}
-        <Route path="/" element={<RoleSelection />} />
-
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="users" element={<Users />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="schedule" element={<Schedule />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="defense-management" element={<DefenseManagement />} />
-          <Route path="defense-schedule" element={<DefenseSchedule />} />
-          <Route path="notifications" element={<Notifications />} />
-        </Route>
-
-        {/* Teacher Routes */}
-        <Route path="/teacher" element={<TeacherLayout />}>
-          <Route index element={<TeacherDashboard />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="schedule" element={<Schedule />} />
-          <Route path="feedback-submission" element={<FeedbackSubmission />} />
-          <Route path="progress-report" element={<ProgressReport />} />
-          <Route path="project-proposal" element={<ProjectProposal />} />
-          <Route path="notifications" element={<Notifications />} />
-        </Route>
-
-        {/* Student Routes */}
-        <Route path="/student" element={<StudentLayout />}>
-          <Route index element={<StudentDashboard />} />
-          <Route path="pfe-selection" element={<PfeSelection />} />
-          <Route path="submit-project" element={<SubmitProject />} />
-          <Route path="team-formation" element={<TeamFormation />} />
-          <Route path="progress-report" element={<ProgressReport />} />
-          <Route path="resource-request" element={<ResourceRequest />} />
-          <Route path="notifications" element={<Notifications />} />
-          <Route path="feedback-submission" element={<FeedbackSubmission />} />
-        </Route>
-
-        {/* Company Routes */}
-        <Route path="/company" element={<CompanyLayout />}>
-          <Route index element={<CompanyDashboard />} />
-          <Route path="project-proposal" element={<ProjectProposal />} />
-          <Route path="notifications" element={<Notifications />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <SidebarProvider>
+        <RouterProvider 
+          router={router} 
+          />
+      </SidebarProvider>
+    </AuthProvider>
   );
 }
+
+// TODO: Update @types/react-router-dom when a new version is available that includes the 'future' prop type
 
 export default App;
 

@@ -13,11 +13,16 @@ class RouteServiceProvider extends ServiceProvider
      * @var string|null
      */
     protected $namespace = 'App\\Http\\Controllers';
-
+   
+    
+    
+   
+    
+        public const HOME = '/home';
+    
     /**
      * Définissez les chemins d'accès pour votre application.
      */
-    public const HOME = '/home';
 
     /**
      * Initialisation du fournisseur de services.
@@ -39,4 +44,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
     }
+    
+
+    
 }
