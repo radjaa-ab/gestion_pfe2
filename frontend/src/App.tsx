@@ -15,7 +15,7 @@ const TeacherDashboard = React.lazy(() => import('./pages/teacher/teacher-dashbo
 const StudentDashboard = React.lazy(() => import('./pages/student/student-dashboard'));
 const CompanyDashboard = React.lazy(() => import('./pages/company/company-dashboard'));
 const Login = React.lazy(() => import('./pages/Login'));
-const Register = React.lazy(() => import('./pages/Register'));
+const Register = React.lazy(() => import('./pages/register'));
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
