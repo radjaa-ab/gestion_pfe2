@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Bell, CheckCircle, AlertTriangle, Info } from 'lucide-react'
+import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 
 type NotificationType = 'all' | 'info' | 'warning' | 'success'
