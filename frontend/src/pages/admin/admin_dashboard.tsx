@@ -51,7 +51,7 @@ type Admin = UserBase & {
 
 type Company = UserBase & {
   role: 'company';
-  nomEntreprise: string;
+  nomcompany: string;
   secteur: string;
 }
 
@@ -425,8 +425,8 @@ export default function AdminDashboard() {
                         {newUser.role === 'company' && (
                           <>
                             <div className="space-y-2">
-                              <Label htmlFor="nomEntreprise">Nom de l'Entreprise</Label>
-                              <Input id="nomEntreprise" name="nomEntreprise" value={(newUser as Company).nomEntreprise || ''} onChange={handleInputChange} required />
+                              <Label htmlFor="nomcompany">Nom de l'company</Label>
+                              <Input id="nomcompany" name="nomcompany" value={(newUser as Company).nomcompany || ''} onChange={handleInputChange} required />
                             </div>
                             <div className="space-y-2">
                               <Label htmlFor="secteur">Secteur</Label>

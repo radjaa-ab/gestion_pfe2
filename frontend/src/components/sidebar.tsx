@@ -89,7 +89,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
       <Divider />
       <div style={{ padding: '16px' }}>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          Logged in as: {user?.name} ({user?.role})
+          Logged in as: {user?.name}
         </Typography>
         <MuiButton
           variant="outlined"

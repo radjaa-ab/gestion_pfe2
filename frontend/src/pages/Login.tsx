@@ -14,25 +14,26 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    const user = await login(email, password);
-    toast({
-      title: 'Login successful',
-      description: 'Welcome back!',
-      variant: 'default',
-    });
-      
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const user = await login(email, password);
+      toast({
+        title: 'Login successful',
+        description: 'Welcome back!',
+        variant: 'default',
+      });
+    
+    // Navigate based on user role
     navigate(`/${user.role}`);
-  } catch (error) {
-    toast({
-      title: 'Login failed',
-      description: 'Please check your credentials and try again.',
-      variant: 'destructive',
-    });
-  }
-};
+    } catch (error) {
+      toast({
+        title: 'Login failed',
+        description: 'Please check your credentials and try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">

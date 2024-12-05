@@ -61,7 +61,7 @@ export type Admin = UserBase & {
 
 export type Company = UserBase & {
   role: 'company';
-  nomEntreprise: string;
+  nomcompany: string;
   secteur: string;
 };
 

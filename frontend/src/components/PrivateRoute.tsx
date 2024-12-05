@@ -21,6 +21,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, allowedRoles }) =
   }
 
   if (!allowedRoles.includes(user.role)) {
+    // Redirect to the user's default route based on their role
     return <Navigate to={`/${user.role}`} replace />;
   }
 
