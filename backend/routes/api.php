@@ -45,4 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Defense routes
     Route::apiResource('soutenances', SoutenanceController::class);
 });
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('/import-users', [ImportController::class, 'importUsers']);
+});
 
