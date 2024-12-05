@@ -8,16 +8,6 @@ export default {
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
-        module.exports = {
-            content: [
-              './src/**/*.{js,ts,jsx,tsx}',
-            ],
-            theme: {
-              extend: {},
-            },
-            plugins: [],
-          }
-          
     ],
     theme: {
         extend: {

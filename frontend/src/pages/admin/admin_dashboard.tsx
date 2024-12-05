@@ -81,6 +81,11 @@ export default function AdminDashboard() {
   const [projectProposalDeadline, setProjectProposalDeadline] = useState<DateRange | undefined>(undefined)
   const { toast } = useToast()
 
+  const [selectedEmailTemplate, setSelectedEmailTemplate] = useState<EmailTemplate | null>(null)
+  const [emailPreview, setEmailPreview] = useState<string>('')
+  const [recipientGroup, setRecipientGroup] = useState<'all' | 'teachers' | 'students' | 'companies'>('all')
+  const [isEmailPreviewDialogOpen, setIsEmailPreviewDialogOpen] = useState(false)
+
   useEffect(() => {
     // Simulating fetching users and email templates
     setUsers([
@@ -172,6 +177,24 @@ export default function AdminDashboard() {
       specialite: value,
     }));
   };
+
+  const handleEmailTemplateSelect = (templateId: number) => {
+    const template = emailTemplates.find(t => t.id === templateId)
+    if (template) {
+      setSelectedEmailTemplate(template)
+      setEmailPreview(template.body)
+    }
+  }
+
+  const handleSendEmail = () => {
+    if (selectedEmailTemplate) {
+      toast({
+        title: "Email Sent",
+        description: `Email "${selectedEmailTemplate.name}" sent to ${recipientGroup} users.`,
+      })
+      setIsEmailPreviewDialogOpen(false)
+    }
+  }
 
   // Sample data for the charts
   const userDistributionData = [
@@ -576,6 +599,10 @@ export default function AdminDashboard() {
                             variant: "destructive",
                           })
                         }}>Delete</Button>
+                        <Button variant="outline" size="sm" className="ml-2" onClick={() => {
+                          handleEmailTemplateSelect(template.id)
+                          setIsEmailPreviewDialogOpen(true)
+                        }}>Send</Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -583,8 +610,59 @@ export default function AdminDashboard() {
               </Table>
             </CardContent>
           </Card>
+
+          <Dialog open={isEmailPreviewDialogOpen} onOpenChange={setIsEmailPreviewDialogOpen}>
+            <DialogContent className="max-w-3xl max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle>Review and Send Email</DialogTitle>
+              </DialogHeader>
+              <ScrollArea className="h-[60vh] pr-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="recipientGroup">Recipient Group</Label>
+                    <Select
+                      value={recipientGroup}
+                      onValueChange={(value: 'all' | 'teachers' | 'students' | 'companies') => setRecipientGroup(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select recipient group" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Users</SelectItem>
+                        <SelectItem value="teachers">Teachers</SelectItem>
+                        <SelectItem value="students">Students</SelectItem>
+                        <SelectItem value="companies">Companies</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emailSubject">Subject</Label>
+                    <Input
+                      id="emailSubject"
+                      value={selectedEmailTemplate?.subject || ''}
+                      onChange={(e) => setSelectedEmailTemplate(prev => prev ? { ...prev, subject: e.target.value } : null)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emailBody">Body</Label>
+                    <Textarea
+                      id="emailBody"
+                      value={emailPreview}
+                      onChange={(e) => setEmailPreview(e.target.value)}
+                      rows={10}
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setIsEmailPreviewDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleSendEmail}>Send Email</Button>
+                  </div>
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
       </Tabs>
     </div>
   )
 }
+

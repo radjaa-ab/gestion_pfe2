@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Sidebar } from '../components/Sidebar';
+import { Sidebar } from '../components/sidebar';
 import { Header } from '../components/header';
 import { Home, Users, FileText, Calendar, Settings } from 'lucide-react';
 
