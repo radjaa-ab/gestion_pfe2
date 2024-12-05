@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
-import api from '../services/api'
+import api from '../../services/api'
 
 interface PfeEvent {
   id: number;

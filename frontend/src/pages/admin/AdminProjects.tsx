@@ -15,7 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Eye, Edit, Trash2 } from 'lucide-react';
-import api from '../services/api';
+import api from '../../services/api';
 
 interface Project {
   id: number;

@@ -1,80 +1,90 @@
-import React, { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { SidebarProvider } from './components/SidebarProvider';
 import PrivateRoute from './components/PrivateRoute';
-import LoadingPage from './components/LoadingPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import AdminLayout from './layouts/AdminLayout';
+import TeacherLayout from './layouts/TeacherLayout';
+import StudentLayout from './layouts/StudentLayout';
+import CompanyLayout from './layouts/CompanyLayout';
+import NotFound from './pages/NotFound';
 
-// Lazy load components
-const AdminLayout = React.lazy(() => import('./layouts/AdminLayout'));
-const TeacherLayout = React.lazy(() => import('./layouts/TeacherLayout'));
-const StudentLayout = React.lazy(() => import('./layouts/StudentLayout'));
-const CompanyLayout = React.lazy(() => import('./layouts/CompanyLayout'));
-const AdminDashboard = React.lazy(() => import('./pages/admin/admin_dashboard'));
-const TeacherDashboard = React.lazy(() => import('./pages/teacher/teacher-dashboard'));
-const StudentDashboard = React.lazy(() => import('./pages/student/student-dashboard'));
-const CompanyDashboard = React.lazy(() => import('./pages/company/company-dashboard'));
-const Login = React.lazy(() => import('./pages/Login'));
-const Register = React.lazy(() => import('./pages/Register'));
-const Dashboard = React.lazy(() => import('./components/Dashboard'));
-const NotFound = React.lazy(() => import('./pages/NotFound'));
+// Import your dashboard components
+import AdminDashboard from './pages/admin/admin_dashboard'
+import AdminUsers from './pages/users';
+import AdminProjects from './pages/admin/AdminProjects';
+import AdminSchedule from './pages/admin/AdminSchedule';
+import AdminSettings from './pages/admin/AdminSettings';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Navigate to="/login" />,
-  },
-  {
-    path: "/login",
-    element: <Suspense fallback={<LoadingPage />}><Login /></Suspense>,
-  },
-  {
-    path: "/register",
-    element: <Suspense fallback={<LoadingPage />}><Register /></Suspense>,
-  },
-  {
-    path: "/dashboard",
-    element: <PrivateRoute><Suspense fallback={<LoadingPage />}><Dashboard /></Suspense></PrivateRoute>,
-  },
-  {
-    path: "/admin",
-    element: <PrivateRoute><Suspense fallback={<LoadingPage />}><AdminLayout /></Suspense></PrivateRoute>,
-    children: [
-      { index: true, element: <AdminDashboard /> },
-    ],
-  },
-  {
-    path: "/teacher",
-    element: <PrivateRoute><Suspense fallback={<LoadingPage />}><TeacherLayout /></Suspense></PrivateRoute>,
-    children: [
-      { index: true, element: <TeacherDashboard /> },
-    ],
-  },
-  {
-    path: "/student",
-    element: <PrivateRoute><Suspense fallback={<LoadingPage />}><StudentLayout /></Suspense></PrivateRoute>,
-    children: [
-      { index: true, element: <StudentDashboard /> },
-    ],
-  },
-  {
-    path: "/company",
-    element: <PrivateRoute><Suspense fallback={<LoadingPage />}><CompanyLayout /></Suspense></PrivateRoute>,
-    children: [
-      { index: true, element: <CompanyDashboard /> },
-    ],
-  },
-  {
-    path: "*",
-    element: <Suspense fallback={<LoadingPage />}><NotFound /></Suspense>,
-  },
-]);
+import TeacherDashboard from './pages/teacher/teacher-dashboard';
+import TeacherProjects from './pages/teacher/TeacherProjects';
+import TeacherSchedule from './pages/teacher/TeacherSchedule';
+import TeacherFeedback from './pages/teacher/TeacherFeedback';
+import TeacherProgressReports from './pages/teacher/TeacherProgressReports';
+import TeacherProjectProposals from './pages/teacher/TeacherProjectProposals';
+
+import StudentDashboard from './pages/student/student-dashboard';
+import StudentProjects from './pages/student/StudentProjects';
+import StudentSchedule from './pages/student/StudentSchedule';
+import StudentProgressReport from './pages/student/StudentProgressReport';
+import StudentProjectProposal from './pages/student/StudentProjectProposal';
+import StudentTeamFormation from './pages/student/StudentTeamFormation';
+import StudentSubmitProject from './pages/student/StudentSubmitProject';
+import StudentPFESelection from './pages/student/StudentPFESelection';
+
+import CompanyDashboard from './pages/company/company-dashboard';
+import CompanyProjects from './pages/company/CompanyProjects';
+import CompanyProjectProposal from './pages/company/CompanyProjectProposal';
 
 function App() {
   return (
     <AuthProvider>
       <SidebarProvider>
-        <RouterProvider router={router} />
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            <Route path="/admin" element={<PrivateRoute allowedRoles={['admin']}><AdminLayout /></PrivateRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="projects" element={<AdminProjects />} />
+              <Route path="schedule" element={<AdminSchedule />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+            
+            <Route path="/teacher" element={<PrivateRoute allowedRoles={['teacher']}><TeacherLayout /></PrivateRoute>}>
+              <Route index element={<TeacherDashboard />} />
+              <Route path="projects" element={<TeacherProjects />} />
+              <Route path="schedule" element={<TeacherSchedule />} />
+              <Route path="feedback-submission" element={<TeacherFeedback />} />
+              <Route path="progress-report" element={<TeacherProgressReports />} />
+              <Route path="project-proposal" element={<TeacherProjectProposals />} />
+            </Route>
+            
+            <Route path="/student" element={<PrivateRoute allowedRoles={['student']}><StudentLayout /></PrivateRoute>}>
+              <Route index element={<StudentDashboard />} />
+              <Route path="projects" element={<StudentProjects />} />
+              <Route path="schedule" element={<StudentSchedule />} />
+              <Route path="progress-report" element={<StudentProgressReport />} />
+              <Route path="project-proposal" element={<StudentProjectProposal />} />
+              <Route path="team-formation" element={<StudentTeamFormation />} />
+              <Route path="submit-project" element={<StudentSubmitProject />} />
+              <Route path="pfe-selection" element={<StudentPFESelection />} />
+            </Route>
+            
+            <Route path="/company" element={<PrivateRoute allowedRoles={['company']}><CompanyLayout /></PrivateRoute>}>
+              <Route index element={<CompanyDashboard />} />
+              <Route path="projects" element={<CompanyProjects />} />
+              <Route path="project-proposal" element={<CompanyProjectProposal />} />
+            </Route>
+            
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
       </SidebarProvider>
     </AuthProvider>
   );

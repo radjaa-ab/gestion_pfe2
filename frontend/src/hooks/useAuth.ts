@@ -32,13 +32,14 @@ export const useAuth = () => {
     fetchUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (email: string, password: string): Promise<User> => {
     try {
       const data = await apiLogin(email, password);
       const loggedInUser = data.user;
       setUser(loggedInUser);
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(loggedInUser));
+      return loggedInUser;
     } catch (error) {
       console.error('Login failed:', error);
       throw error;

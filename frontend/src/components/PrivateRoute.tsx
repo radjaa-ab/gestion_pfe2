@@ -5,9 +5,10 @@ import LoadingPage from './LoadingPage';
 
 interface PrivateRouteProps {
   children: React.ReactNode;
+  allowedRoles: string[];
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -17,6 +18,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to={`/${user.role}`} replace />;
   }
 
   return <>{children}</>;
