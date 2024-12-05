@@ -25,11 +25,11 @@ class Soutenance extends Model
 
     public function president()
     {
-        return $this->belongsTo(Enseignant::class, 'president_id');
+        return $this->belongsTo(teacher::class, 'president_id');
     }
 
     public function examinateur()
     {
-        return $this->belongsTo(Enseignant::class, 'examinateur_id');
+        return $this->belongsTo(teacher::class, 'examinateur_id');
     }
 }

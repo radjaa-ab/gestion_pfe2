@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\EtudiantController;
-use App\Http\Controllers\EnseignantController;
-use App\Http\Controllers\EntrepriseController;
+use App\Http\Controllers\studentController;
+use App\Http\Controllers\teacherController;
+use App\Http\Controllers\companyController;
 use App\Http\Controllers\PFEController;
 use App\Http\Controllers\SoutenanceController;
 
@@ -31,13 +31,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
 
     // Student routes
-    Route::apiResource('etudiants', EtudiantController::class);
+    Route::apiResource('students', studentController::class);
 
     // Teacher routes
-    Route::apiResource('enseignants', EnseignantController::class);
+    Route::apiResource('teachers', teacherController::class);
 
     // Company routes
-    Route::apiResource('entreprises', EntrepriseController::class);
+    Route::apiResource('companys', companyController::class);
 
     // PFE routes
     Route::apiResource('pfes', PFEController::class);

@@ -14,25 +14,25 @@ class PFE extends Model
         'type',
         'option',
         'description',
-        'etudiant_id',
+        'student_id',
         'encadrant_id',
-        'entreprise_id',
+        'company_id',
         'statut',
     ];
 
-    public function etudiant()
+    public function student()
     {
-        return $this->belongsTo(Etudiant::class);
+        return $this->belongsTo(student::class);
     }
 
     public function encadrant()
     {
-        return $this->belongsTo(Enseignant::class, 'encadrant_id');
+        return $this->belongsTo(teacher::class, 'encadrant_id');
     }
 
-    public function entreprise()
+    public function company()
     {
-        return $this->belongsTo(Entreprise::class);
+        return $this->belongsTo(company::class);
     }
 
     public function soutenance()

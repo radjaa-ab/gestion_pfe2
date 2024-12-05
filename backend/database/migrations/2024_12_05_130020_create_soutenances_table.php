@@ -14,8 +14,8 @@ return new class extends Migration
             $table->date('date');
             $table->time('heure');
             $table->string('salle');
-            $table->foreignId('president_id')->constrained('enseignants')->onDelete('cascade');
-            $table->foreignId('examinateur_id')->constrained('enseignants')->onDelete('cascade');
+            $table->foreignId('president_id')->constrained('teachers')->onDelete('cascade');
+            $table->foreignId('examinateur_id')->constrained('teachers')->onDelete('cascade');
             $table->timestamps();
         });
     }

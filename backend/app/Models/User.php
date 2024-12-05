@@ -26,18 +26,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function etudiant()
+    public function student()
     {
-        return $this->hasOne(Etudiant::class);
+        return $this->hasOne(student::class);
     }
 
-    public function enseignant()
+    public function teacher()
     {
-        return $this->hasOne(Enseignant::class);
+        return $this->hasOne(teacher::class);
     }
 
-    public function entreprise()
+    public function company()
     {
-        return $this->hasOne(Entreprise::class);
+        return $this->hasOne(company::class);
     }
 }

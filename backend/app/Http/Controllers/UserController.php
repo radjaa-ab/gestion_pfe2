@@ -20,7 +20,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:admin,etudiant,enseignant,entreprise',
+            'role' => 'required|in:admin,student,teacher,company',
         ]);
 
         $user = User::create([
@@ -44,7 +44,7 @@ class UserController extends Controller
             'name' => 'string|max:255',
             'email' => 'string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'string|min:8',
-            'role' => 'in:admin,etudiant,enseignant,entreprise',
+            'role' => 'in:admin,student,teacher,company',
         ]);
 
         $user->update($request->all());
