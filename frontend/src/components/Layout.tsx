@@ -5,7 +5,6 @@ import { Outlet } from 'react-router-dom'
 import { Sidebar } from './sidebar'
 import { Header } from './header'
 import {
-  SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
@@ -21,16 +20,16 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
   return (
     <SidebarProvider>
-      <div className="fixed inset-0 flex">
+      <div className="flex min-h-screen">
         <Sidebar menuItems={menuItems} />
-        <SidebarInset className="flex flex-col flex-1">
+        <div className="flex-1 flex flex-col min-h-screen">
           <Header />
-          <main className="flex-1 overflow-y-auto bg-background">
-            <div className="container p-6">
+          <main className="flex-1 overflow-y-auto">
+            <div className="container mx-auto p-6">
               {children || <Outlet />}
             </div>
           </main>
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
