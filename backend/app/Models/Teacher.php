@@ -20,7 +20,7 @@ class teacher extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function pfes()
+    public function pfesEncadres()
     {
         return $this->hasMany(PFE::class, 'encadrant_id');
     }

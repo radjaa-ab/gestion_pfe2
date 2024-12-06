@@ -9,6 +9,8 @@ class PFE extends Model
 {
     use HasFactory;
 
+    protected $table = 'p_f_e_s';
+
     protected $fillable = [
         'intitule',
         'type',
@@ -22,21 +24,17 @@ class PFE extends Model
 
     public function student()
     {
-        return $this->belongsTo(student::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function encadrant()
     {
-        return $this->belongsTo(teacher::class, 'encadrant_id');
+        return $this->belongsTo(Teacher::class, 'encadrant_id');
     }
 
     public function company()
     {
-        return $this->belongsTo(company::class);
-    }
-
-    public function soutenance()
-    {
-        return $this->hasOne(Soutenance::class);
+        return $this->belongsTo(Company::class);
     }
 }
+
