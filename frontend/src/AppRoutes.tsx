@@ -36,16 +36,20 @@ import CompanyDashboard from './pages/company/CompanyDashboard';
 import CompanyProjects from './pages/company/CompanyProjects';
 import CompanyProjectProposal from './pages/company/CompanyProjectProposal';
 
+import Notifications from './pages/Notifications';
+import Settings from './pages/settings';
 
-import Notifications from '../src/pages/Notifications';
-import Settings from '../src/pages/settings';
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       
-      <Route path="/admin" element={<PrivateRoute allowedRoles={['admin']}><AdminLayout /></PrivateRoute>}>
+      <Route path="/admin" element={
+        <PrivateRoute allowedRoles={['admin']}>
+          <AdminLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="projects" element={<AdminProjects />} />
@@ -53,7 +57,11 @@ const AppRoutes = () => {
         <Route path="settings" element={<AdminSettings />} />
       </Route>
       
-      <Route path="/teacher" element={<PrivateRoute allowedRoles={['teacher']}><TeacherLayout /></PrivateRoute>}>
+      <Route path="/teacher" element={
+        <PrivateRoute allowedRoles={['teacher']}>
+          <TeacherLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<TeacherDashboard />} />
         <Route path="projects" element={<TeacherProjects />} />
         <Route path="schedule" element={<TeacherSchedule />} />
@@ -62,7 +70,11 @@ const AppRoutes = () => {
         <Route path="project-proposal" element={<TeacherProjectProposals />} />
       </Route>
       
-      <Route path="/student" element={<PrivateRoute allowedRoles={['student']}><StudentLayout /></PrivateRoute>}>
+      <Route path="/student" element={
+        <PrivateRoute allowedRoles={['student']}>
+          <StudentLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<StudentDashboard />} />
         <Route path="projects" element={<StudentProjects />} />
         <Route path="schedule" element={<StudentSchedule />} />
@@ -73,7 +85,11 @@ const AppRoutes = () => {
         <Route path="pfe-selection" element={<StudentPFESelection />} />
       </Route>
       
-      <Route path="/company" element={<PrivateRoute allowedRoles={['company']}><CompanyLayout /></PrivateRoute>}>
+      <Route path="/company" element={
+        <PrivateRoute allowedRoles={['company']}>
+          <CompanyLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<CompanyDashboard />} />
         <Route path="projects" element={<CompanyProjects />} />
         <Route path="project-proposal" element={<CompanyProjectProposal />} />
@@ -87,9 +103,22 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
-       <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/settings" element={<Settings />} />
+      <Route 
+        path="/notifications" 
+        element={
+          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
+            <Notifications />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/settings" 
+        element={
+          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
+            <Settings />
+          </PrivateRoute>
+        } 
+      />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

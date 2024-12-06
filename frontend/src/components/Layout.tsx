@@ -1,26 +1,31 @@
-import React from 'react';
+
 import { Outlet } from 'react-router-dom';
-import { Sidebar as Sidebar } from './Sidebar';
+import { Sidebar } from './sidebar';
 import { Header } from './header';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { useSidebar } from './SidebarProvider';
 
 interface LayoutProps {
-  hideSidebar?: boolean;
+  menuItems: Array<{
+    label: string;
+    icon: React.ElementType;
+    link: string;
+  }>;
   children?: React.ReactNode;
 }
 
-export function Layout({ hideSidebar = false, children }: LayoutProps) {
+export const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
+  const { toggleSidebar } = useSidebar();
+
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        {!hideSidebar && <Sidebar menuItems={[]} />}
-        <div className="flex flex-col flex-1">
-          <Header />
-          <main className="flex-1 p-6">
-            {children || <Outlet />}
-          </main>
-        </div>
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar menuItems={menuItems} />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header toggleSidebar={toggleSidebar} />
+        <main className="flex-1 overflow-y-auto">
+          {children || <Outlet />}
+        </main>
       </div>
-    </SidebarProvider>
+    </div>
   );
-}
+};
+

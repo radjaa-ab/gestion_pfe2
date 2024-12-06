@@ -1,8 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { Link } from "react-router-dom"
-import { Bell, Search, LogOut, User, Settings, Home } from 'lucide-react'
+import { Bell, Search, LogOut, User, Settings, Home, Menu } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,7 +14,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "../hooks/useAuth"
 
-export function Header() {
+interface HeaderProps {
+  toggleSidebar: () => void;
+}
+
+export function Header({ toggleSidebar }: HeaderProps) {
   const { user, logout } = useAuth()
   
   const handleLogout = async () => {
@@ -29,9 +32,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center font-bold text-xl text-blue-600">
-          PFE Platform
-        </Link>
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
+            <Menu className="h-5 w-5" />
+          </Button>
+          <Link to="/" className="flex items-center font-bold text-xl text-blue-600">
+            PFE Platform
+          </Link>
+        </div>
         <div className="flex items-center space-x-4">
           <form className="w-[300px]">
             <div className="relative">
@@ -42,7 +50,7 @@ export function Header() {
               />
             </div>
           </form>
-          <Link to="/notifications" className="relative">
+          <Link to="/admin/notifications" className="relative">
             <Button
               variant="ghost"
               size="icon"
@@ -85,7 +93,7 @@ export function Header() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/settings" className="flex items-center">
+                <Link to="/admin/settings" className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>

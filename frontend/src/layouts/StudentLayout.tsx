@@ -1,6 +1,5 @@
-import { Outlet } from 'react-router-dom';
-import { Sidebar } from '../components/Sidebar';
-import { Header } from '../components/header';
+
+import { Layout } from '../components/Layout';
 import { Home, FileText, Calendar, ClipboardList, FileSignature, Users, Upload, Star } from 'lucide-react';
 
 const studentMenuItems = [
@@ -15,16 +14,6 @@ const studentMenuItems = [
 ];
 
 export default function StudentLayout() {
-  return (
-    <div className="flex h-screen bg-gray-100 flex-col">
-      <Header />
-      <div className="flex flex-1">
-        <Sidebar menuItems={studentMenuItems} />
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+  return <Layout menuItems={studentMenuItems} />;
 }
 

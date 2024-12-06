@@ -1,51 +1,99 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { TypeIcon as type, LucideIcon } from 'lucide-react';
 
-interface SidebarProps {
-  menuItems: {
-    label: string;
-    icon: LucideIcon;
-    link: string;
-  }[];
+import { useLocation, Link } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import {
+  Sidebar as UISidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar"
+import { useAuth } from "../hooks/useAuth"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useSidebar } from './SidebarProvider'
+
+interface MenuItem {
+  label: string
+  icon: React.ElementType
+  link: string
 }
 
-export function Sidebar({ menuItems }: SidebarProps) {
-  const location = useLocation();
+interface SidebarProps {
+  menuItems: MenuItem[];
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
+  const location = useLocation()
+  const { user, logout } = useAuth()
+  const { state, toggleSidebar } = useSidebar()
+  const isCollapsed = state === "collapsed"
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
 
   return (
-    <div className="w-64 h-full bg-blue-700 flex flex-col">
-      <ScrollArea className="flex-grow">
-        <div className="space-y-4 py-4">
-          <div className="px-3 py-2">
-            <h2 className="mb-2 px-4 text-lg font-semibold text-white">
-              Menu
-            </h2>
-            <nav className="space-y-1">
-              {menuItems.map((item) => (
-                <Button
-                  key={item.link}
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start text-white hover:bg-blue-600",
-                    location.pathname === item.link && "bg-blue-600"
-                  )}
-                  asChild
-                >
-                  <Link to={item.link}>
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.label}
-                  </Link>
-                </Button>
-              ))}
-            </nav>
-          </div>
+    <UISidebar className={`relative transition-all duration-300 ease-in-out ${isCollapsed ? 'w-16' : 'w-64'}`}>
+      <SidebarHeader className="border-b border-border p-4">
+        <div className="flex items-center gap-2">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user?.profilePic} />
+            <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
+          </Avatar>
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">{user?.name}</span>
+              <span className="text-xs text-muted-foreground">{user?.role}</span>
+            </div>
+          )}
         </div>
+      </SidebarHeader>
+      <ScrollArea className="flex-1">
+        <SidebarContent>
+          <SidebarMenu>
+            {menuItems.map((item) => (
+              <SidebarMenuItem key={item.label} className="py-1">
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === item.link}
+                >
+                  <Link to={item.link} className="flex items-center">
+                    <item.icon className="h-4 w-4" />
+                    {!isCollapsed && <span className="ml-2">{item.label}</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarContent>
       </ScrollArea>
-    </div>
+      <SidebarFooter className="border-t border-border p-4">
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4" />
+          {!isCollapsed && <span className="ml-2">Logout</span>}
+        </Button>
+      </SidebarFooter>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute -right-3 top-1/2 transform -translate-y-1/2"
+        onClick={toggleSidebar}
+      >
+        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      </Button>
+    </UISidebar>
   )
 }
 
