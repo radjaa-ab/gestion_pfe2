@@ -35,8 +35,10 @@ import StudentPFESelection from './pages/student/StudentPFESelection';
 import CompanyDashboard from './pages/company/CompanyDashboard';
 import CompanyProjects from './pages/company/CompanyProjects';
 import CompanyProjectProposal from './pages/company/CompanyProjectProposal';
-import React from 'react';
 
+
+import Notifications from '../src/pages/Notifications';
+import Settings from '../src/pages/settings';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -85,7 +87,9 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
-      
+       <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/settings" element={<Settings />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

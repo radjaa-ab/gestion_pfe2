@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { login as apiLogin, logout as apiLogout, register as apiRegister } from '../services/api';
+import api from '../services/api';
 
 interface User {
   id: string;
   name: string;
   email: string;
   role: 'admin' | 'teacher' | 'student' | 'company';
+  profilePic?: string;
 }
 
 export const useAuth = () => {
@@ -34,11 +35,10 @@ export const useAuth = () => {
 
   const login = async (email: string, password: string): Promise<User> => {
     try {
-      const data = await apiLogin(email, password);
-      const loggedInUser = data.user;
+      const response = await api.post('/login', { email, password });
+      const loggedInUser = response.data.user;
       setUser(loggedInUser);
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      localStorage.setItem('token', response.data.access_token);
       return loggedInUser;
     } catch (error) {
       console.error('Login failed:', error);
@@ -46,11 +46,23 @@ export const useAuth = () => {
     }
   };
 
+  const register = async (userData: { name: string, email: string, password: string, role: string }): Promise<User> => {
+    try {
+      const response = await api.post('/register', userData);
+      const registeredUser = response.data.user;
+      setUser(registeredUser);
+      localStorage.setItem('token', response.data.access_token);
+      return registeredUser;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
-      await apiLogout();
+      await api.post('/logout');
       setUser(null);
-      localStorage.removeItem('user');
       localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
@@ -58,20 +70,18 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (userData: { name: string, email: string, password: string, role: string }): Promise<User> => {
+  const updateUser = async (userData: { name: string; email: string; profilePic?: string }): Promise<User> => {
     try {
-      const data = await apiRegister(userData);
-      const registeredUser = data.user;
-      setUser(registeredUser);
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(registeredUser));
-      return registeredUser;
+      const response = await api.put('/user', userData);
+      const updatedUser = response.data;
+      setUser(updatedUser);
+      return updatedUser;
     } catch (error) {
-      console.error('Registration failed:', error);
-      throw new Error('Registration failed');
+      console.error('Update user failed:', error);
+      throw error;
     }
   };
 
-  return { user, loading, login, logout, register };
+  return { user, loading, login, logout, register, updateUser };
 };
 

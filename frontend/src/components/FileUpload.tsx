@@ -1,3 +1,4 @@
+
 'use client'
 
 import { ChangeEvent, useState } from 'react'
@@ -20,6 +21,7 @@ export function FileUpload({ onFileUpload, accept = "image/*" }: FileUploadProps
     const file = e.target.files?.[0]
     if (file) {
       onFileUpload(file)
+      //const reader = new FileReader() //Removed unused reader variable
       setIsUploading(true)
       try {
         const formData = new FormData()
@@ -74,4 +76,3 @@ export function FileUpload({ onFileUpload, accept = "image/*" }: FileUploadProps
     </div>
   )
 }
-
