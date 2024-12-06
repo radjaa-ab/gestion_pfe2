@@ -20,8 +20,9 @@ class student extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function pfe()
+    public function pfes()
     {
-        return $this->belongsTo(PFE::class);
+        return $this->hasMany(PFE::class);
     }
+    
 }

@@ -23,4 +23,5 @@ class company extends Model
     {
         return $this->hasMany(PFE::class);
     }
+    
 }
