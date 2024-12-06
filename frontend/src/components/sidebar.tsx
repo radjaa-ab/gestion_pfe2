@@ -29,7 +29,7 @@ interface SidebarProps {
 
 export function Sidebar({ menuItems }: SidebarProps) {
   const location = useLocation()
-  const { state } = useSidebar()
+  useSidebar()
   const { theme, toggleTheme } = useTheme()
 
   return (
@@ -119,7 +119,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
           
           <Tooltip>
             <TooltipTrigger asChild>
-              <SidebarTrigger className="hidden w-full group-data-[state=collapsed]:flex px-2 h-9 items-center justify-start" />
+              <SidebarTrigger className="hidden group-data-[state=collapsed]:flex w-full px-2 h-9 items-center justify-start" />
             </TooltipTrigger>
             <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
               Toggle sidebar

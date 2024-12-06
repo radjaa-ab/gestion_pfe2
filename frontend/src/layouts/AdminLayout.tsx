@@ -1,6 +1,4 @@
-import { Outlet } from 'react-router-dom';
-import { Sidebar } from '../components/sidebar';
-import { Header } from '../components/header';
+import { Layout } from '../components/Layout';
 import { Home, Users, FileText, Calendar, Settings, Bell } from 'lucide-react';
 
 const adminMenuItems = [
@@ -13,17 +11,6 @@ const adminMenuItems = [
 ];
 
 export default function AdminLayout() {
-
-  return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar menuItems={adminMenuItems} />
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+  return <Layout menuItems={adminMenuItems} />;
 }
 

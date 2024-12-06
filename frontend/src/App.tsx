@@ -1,6 +1,6 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { SidebarProvider } from './components/SidebarProvider';
+import { SidebarProvider } from './components/ui/sidebar';
 import { ThemeProvider } from './contexts/ThemeContext';
 import AppRoutes from './AppRoutes';
 

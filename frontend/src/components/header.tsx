@@ -16,12 +16,17 @@ import { useAuth } from "../hooks/useAuth"
 import { useSidebar } from "@/components/ui/sidebar"
 
 export function Header() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const { toggleSidebar } = useSidebar()
+
+  const handleLogout = () => {
+    logout()
+    // Redirect to login page or show a logout confirmation
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-sidebar">
-      <div className="flex h-14 items-center justify-between px-4">
+      <div className="container mx-auto flex h-14 items-center justify-between px-4">
         <div className="flex items-center">
           <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
             <Menu className="h-5 w-5 text-sidebar-foreground" />
@@ -31,7 +36,7 @@ export function Header() {
           </Link>
         </div>
         <div className="flex items-center space-x-4">
-          <form className="w-[300px]">
+          <form className="w-[300px]" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -44,7 +49,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-sidebar-foreground"
+              className="relative text-sidebar-foreground hover:bg-sidebar-hover"
             >
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
@@ -87,6 +92,13 @@ export function Header() {
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={handleLogout}>
+                <span className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

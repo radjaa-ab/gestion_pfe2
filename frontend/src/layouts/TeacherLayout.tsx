@@ -1,4 +1,3 @@
-
 import { Layout } from '../components/Layout';
 import { Home, FileText, Calendar, MessageSquare, ClipboardList, FileSignature } from 'lucide-react';
 
