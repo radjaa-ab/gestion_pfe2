@@ -15,6 +15,13 @@ import * as TeacherPages from './pages/teacher';
 import * as StudentPages from './pages/student';
 import * as CompanyPages from './pages/company';
 
+// Import new components
+import { ThemeSelection } from './components/ThemeSelection';
+import { DefenseAuthorization } from './components/DefenseAuthorization';
+import DefenseScheduling from './components/DefenseScheduling';
+import { GradeEntry } from './components/GradeEntry';
+import { AutomaticAssignment } from './components/AutomaticAssignment';
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -32,6 +39,9 @@ const AppRoutes = () => {
         <Route path="schedule" element={<AdminPages.AdminSchedule />} />
         <Route path="notifications" element={<AdminPages.AdminNotifications />} />
         <Route path="settings" element={<AdminPages.AdminSettings />} />
+        <Route path="theme-selection" element={<ThemeSelection userRole="admin" themesToValidate={[]} />} />
+        <Route path="automatic-assignment" element={<AutomaticAssignment />} />
+        <Route path="defense-scheduling" element={<DefenseScheduling />} />
       </Route>
       
       <Route path="/teacher" element={
@@ -47,6 +57,9 @@ const AppRoutes = () => {
         <Route path="project-proposal" element={<TeacherPages.TeacherProjectProposals />} />
         <Route path="notifications" element={<TeacherPages.TeacherNotifications />} />
         <Route path="settings" element={<TeacherPages.TeacherSettings />} />
+        <Route path="theme-selection" element={<ThemeSelection userRole="teacher" themesToValidate={[]} />} />
+        <Route path="defense-authorization" element={<DefenseAuthorization />} />
+        <Route path="grade-entry" element={<GradeEntry />} />
       </Route>
       
       <Route path="/student" element={
