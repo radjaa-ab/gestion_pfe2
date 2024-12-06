@@ -1,107 +1,123 @@
-import React from 'react';
-import { useLocation, Link } from "react-router-dom"
+"use client"
+
+import React from 'react'
+import { Link, useLocation } from "react-router-dom"
 import {
-  Sidebar as UISidebar,
+  Sidebar as ShadcnSidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar"
-import { useAuth } from "../hooks/useAuth"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, Moon, Sun } from 'lucide-react'
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "../contexts/ThemeContext"
-
-interface MenuItem {
-  label: string
-  icon: React.ElementType
-  link: string
-}
+import { LogOut, Moon, Sun } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
+import { Logo } from './ui/logo'
 
 interface SidebarProps {
-  menuItems: MenuItem[];
+  menuItems: Array<{
+    label: string;
+    icon: React.ElementType;
+    link: string;
+  }>;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
+export function Sidebar({ menuItems }: SidebarProps) {
   const location = useLocation()
-  const { user, logout } = useAuth()
   const { state } = useSidebar()
   const { theme, toggleTheme } = useTheme()
-  const isCollapsed = state === "collapsed"
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
-  }
 
   return (
-    <UISidebar 
+    <ShadcnSidebar 
       collapsible="icon" 
-      className="w-[180px] group-data-[collapsible=icon]:w-[48px] border-r bg-sidebar"
+      className="w-[200px] group-data-[state=collapsed]:w-[60px]"
     >
-      <SidebarHeader className="border-b border-sidebar-border/10 p-4">
-        <div className="flex items-center gap-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.profilePic} />
-            <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
-          </Avatar>
-          {!isCollapsed && (
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-sidebar-foreground">{user?.name}</span>
-              <span className="text-xs text-sidebar-foreground/60">{user?.role}</span>
-            </div>
-          )}
+      <SidebarHeader className="border-b">
+        <div className="flex items-center justify-between px-4 py-3">
+          <Link to="/" className="flex items-center gap-3">
+            <Logo />
+            <h2 className="text-lg font-semibold truncate group-data-[state=collapsed]:hidden">
+              PFE Platform
+            </h2>
+          </Link>
+          <SidebarTrigger className="hidden group-data-[state=expanded]:block" />
         </div>
       </SidebarHeader>
-      <ScrollArea className="flex-1">
-        <SidebarContent>
-          <SidebarMenu>
-            {menuItems.map((item) => (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname === item.link}
-                  tooltip={item.label}
-                >
-                  <Link to={item.link} className="flex items-center">
-                    <item.icon className="h-4 w-4 mr-2" />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </ScrollArea>
-      <SidebarFooter className="mt-auto border-t border-sidebar-border/10 p-2 space-y-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleTheme}
-          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-          {!isCollapsed && <span className="ml-2">Theme</span>}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          <LogOut className="h-4 w-4" />
-          {!isCollapsed && <span className="ml-2">Logout</span>}
-        </Button>
+      <SidebarContent>
+        <SidebarMenu>
+          {menuItems.map((item) => (
+            <SidebarMenuItem key={item.link}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.link}
+                  >
+                    <Link to={item.link} className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate group-data-[state=collapsed]:hidden">
+                        {item.label}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
+                  {item.label}
+                </TooltipContent>
+              </Tooltip>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter className="border-t">
+        <div className="flex flex-col gap-2 p-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start"
+                onClick={toggleTheme}
+              >
+                {theme === "dark" ? (
+                  <>
+                    <Sun className="h-4 w-4 mr-2" />
+                    <span className="group-data-[state=collapsed]:hidden">Light mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="h-4 w-4 mr-2" />
+                    <span className="group-data-[state=collapsed]:hidden">Dark mode</span>
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
+              {theme === "dark" ? "Light mode" : "Dark mode"}
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="group-data-[state=collapsed]:hidden">Logout</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
+              Logout
+            </TooltipContent>
+          </Tooltip>
+          <SidebarTrigger className="hidden group-data-[state=collapsed]:block mt-auto w-full" />
+        </div>
       </SidebarFooter>
-    </UISidebar>
+    </ShadcnSidebar>
   )
 }
 
