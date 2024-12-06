@@ -12,9 +12,10 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "../hooks/useAuth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut } from 'lucide-react'
+import { LogOut, Moon, Sun } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
+import { useTheme } from "../contexts/ThemeContext"
 
 interface MenuItem {
   label: string
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
   const location = useLocation()
   const { user, logout } = useAuth()
   const { state } = useSidebar()
+  const { theme, toggleTheme } = useTheme()
   const isCollapsed = state === "collapsed"
 
   const handleLogout = async () => {
@@ -41,8 +43,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
   }
 
   return (
-    <UISidebar>
-      <SidebarHeader className="border-b border-border p-4">
+    <UISidebar 
+      collapsible="icon" 
+      className="w-[180px] group-data-[collapsible=icon]:w-[48px] border-r bg-sidebar"
+    >
+      <SidebarHeader className="border-b border-sidebar-border/10 p-4">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
             <AvatarImage src={user?.profilePic} />
@@ -50,8 +55,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
           </Avatar>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-medium">{user?.name}</span>
-              <span className="text-xs text-muted-foreground">{user?.role}</span>
+              <span className="text-sm font-medium text-sidebar-foreground">{user?.name}</span>
+              <span className="text-xs text-sidebar-foreground/60">{user?.role}</span>
             </div>
           )}
         </div>
@@ -64,6 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
                 <SidebarMenuButton
                   asChild
                   isActive={location.pathname === item.link}
+                  tooltip={item.label}
                 >
                   <Link to={item.link} className="flex items-center">
                     <item.icon className="h-4 w-4 mr-2" />
@@ -75,14 +81,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
           </SidebarMenu>
         </SidebarContent>
       </ScrollArea>
-      <SidebarFooter className="border-t border-border p-4">
+      <SidebarFooter className="mt-auto border-t border-sidebar-border/10 p-2 space-y-2">
         <Button
           variant="ghost"
-          className="w-full justify-start"
-          onClick={handleLogout}
+          size="sm"
+          onClick={toggleTheme}
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
-          <LogOut className="h-4 w-4 mr-2" />
-          <span>Logout</span>
+          {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+          {!isCollapsed && <span className="ml-2">Theme</span>}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <LogOut className="h-4 w-4" />
+          {!isCollapsed && <span className="ml-2">Logout</span>}
         </Button>
       </SidebarFooter>
     </UISidebar>

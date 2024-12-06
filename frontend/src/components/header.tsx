@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "react-router-dom"
-import { Bell, Search, LogOut, User, Settings, Home, Menu } from 'lucide-react'
+import { Bell, Search, User, Settings, Home, Menu } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,46 +16,38 @@ import { useAuth } from "../hooks/useAuth"
 import { useSidebar } from "@/components/ui/sidebar"
 
 export function Header() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const { toggleSidebar } = useSidebar()
-  
-  const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
-  }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-sidebar">
+      <div className="flex h-14 items-center justify-between px-4">
         <div className="flex items-center">
           <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5 text-sidebar-foreground" />
           </Button>
-          <Link to="/" className="flex items-center font-bold text-xl text-blue-600">
+          <Link to="/" className="flex items-center font-bold text-xl text-sidebar-foreground">
             PFE Platform
           </Link>
         </div>
         <div className="flex items-center space-x-4">
           <form className="w-[300px]">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search..."
-                className="pl-8 w-full"
+                className="pl-8 w-full bg-white/10 border-0 text-sidebar-foreground placeholder:text-sidebar-foreground/60 focus:bg-white focus:text-foreground"
               />
             </div>
           </form>
-          <Link to="/admin/notifications" className="relative">
+          <Link to="/notifications" className="relative">
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-gray-700 hover:bg-gray-100"
+              className="relative text-sidebar-foreground"
             >
               <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
                 17
               </span>
             </Button>
@@ -74,7 +66,7 @@ export function Header() {
               <div className="flex items-center justify-start gap-2 p-2">
                 <div className="flex flex-col space-y-1 leading-none">
                   <p className="font-medium">{user?.name}</p>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
               <DropdownMenuSeparator />
@@ -91,15 +83,10 @@ export function Header() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/admin/settings" className="flex items-center">
+                <Link to="/settings" className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="flex items-center">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
