@@ -4,7 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SidebarProvider } from './components/SidebarProvider';
 import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Register from './pages/register';
 import AdminLayout from './layouts/AdminLayout';
 import TeacherLayout from './layouts/TeacherLayout';
 import StudentLayout from './layouts/StudentLayout';
