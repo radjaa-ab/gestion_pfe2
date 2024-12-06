@@ -1,6 +1,5 @@
-
+import React from 'react';
 import { useLocation, Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
 import {
   Sidebar as UISidebar,
   SidebarContent,
@@ -9,12 +8,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { useAuth } from "../hooks/useAuth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useSidebar } from './SidebarProvider'
+import { Button } from "@/components/ui/button"
 
 interface MenuItem {
   label: string
@@ -29,7 +29,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
   const location = useLocation()
   const { user, logout } = useAuth()
-  const { state, toggleSidebar } = useSidebar()
+  const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
 
   const handleLogout = async () => {
@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
   }
 
   return (
-    <UISidebar className={`relative transition-all duration-300 ease-in-out ${isCollapsed ? 'w-16' : 'w-64'}`}>
+    <UISidebar>
       <SidebarHeader className="border-b border-border p-4">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
@@ -60,14 +60,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
         <SidebarContent>
           <SidebarMenu>
             {menuItems.map((item) => (
-              <SidebarMenuItem key={item.label} className="py-1">
+              <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton
                   asChild
                   isActive={location.pathname === item.link}
                 >
                   <Link to={item.link} className="flex items-center">
-                    <item.icon className="h-4 w-4" />
-                    {!isCollapsed && <span className="ml-2">{item.label}</span>}
+                    <item.icon className="h-4 w-4 mr-2" />
+                    <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -81,18 +81,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ menuItems }) => {
           className="w-full justify-start"
           onClick={handleLogout}
         >
-          <LogOut className="h-4 w-4" />
-          {!isCollapsed && <span className="ml-2">Logout</span>}
+          <LogOut className="h-4 w-4 mr-2" />
+          <span>Logout</span>
         </Button>
       </SidebarFooter>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute -right-3 top-1/2 transform -translate-y-1/2"
-        onClick={toggleSidebar}
-      >
-        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-      </Button>
     </UISidebar>
   )
 }

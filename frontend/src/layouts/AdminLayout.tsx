@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/sidebar';
 import { Header } from '../components/header';
-import { useSidebar } from '../components/SidebarProvider';
 import { Home, Users, FileText, Calendar, Settings, Bell } from 'lucide-react';
 
 const adminMenuItems = [
@@ -14,13 +13,12 @@ const adminMenuItems = [
 ];
 
 export default function AdminLayout() {
-  const { toggleSidebar } = useSidebar();
 
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar menuItems={adminMenuItems} />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header toggleSidebar={toggleSidebar} />
+        <Header />
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>

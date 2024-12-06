@@ -13,13 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "../hooks/useAuth"
+import { useSidebar } from "@/components/ui/sidebar"
 
-interface HeaderProps {
-  toggleSidebar: () => void;
-}
-
-export function Header({ toggleSidebar }: HeaderProps) {
+export function Header() {
   const { user, logout } = useAuth()
+  const { toggleSidebar } = useSidebar()
   
   const handleLogout = async () => {
     try {
