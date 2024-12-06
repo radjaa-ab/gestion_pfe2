@@ -15,9 +15,6 @@ import * as TeacherPages from './pages/teacher';
 import * as StudentPages from './pages/student';
 import * as CompanyPages from './pages/company';
 
-import Notifications from './pages/Notifications';
-import Settings from './pages/settings';
-
 const AppRoutes = () => {
   return (
     <Routes>
@@ -33,6 +30,7 @@ const AppRoutes = () => {
         <Route path="users" element={<AdminPages.AdminUsers />} />
         <Route path="projects" element={<AdminPages.AdminProjects />} />
         <Route path="schedule" element={<AdminPages.AdminSchedule />} />
+        <Route path="notifications" element={<AdminPages.AdminNotifications />} />
         <Route path="settings" element={<AdminPages.AdminSettings />} />
       </Route>
       
@@ -47,6 +45,8 @@ const AppRoutes = () => {
         <Route path="feedback-submission" element={<TeacherPages.TeacherFeedback />} />
         <Route path="progress-report" element={<TeacherPages.TeacherProgressReports />} />
         <Route path="project-proposal" element={<TeacherPages.TeacherProjectProposals />} />
+        <Route path="notifications" element={<TeacherPages.TeacherNotifications />} />
+        <Route path="settings" element={<TeacherPages.TeacherSettings />} />
       </Route>
       
       <Route path="/student" element={
@@ -62,6 +62,8 @@ const AppRoutes = () => {
         <Route path="team-formation" element={<StudentPages.StudentTeamFormation />} />
         <Route path="submit-project" element={<StudentPages.StudentSubmitProject />} />
         <Route path="pfe-selection" element={<StudentPages.StudentPFESelection />} />
+        <Route path="notifications" element={<StudentPages.StudentNotifications />} />
+        <Route path="settings" element={<StudentPages.StudentSettings />} />
       </Route>
       
       <Route path="/company" element={
@@ -72,6 +74,8 @@ const AppRoutes = () => {
         <Route index element={<CompanyPages.CompanyDashboard />} />
         <Route path="projects" element={<CompanyPages.CompanyProjects />} />
         <Route path="project-proposal" element={<CompanyPages.CompanyProjectProposal />} />
+        <Route path="notifications" element={<CompanyPages.CompanyNotifications />} />
+        <Route path="settings" element={<CompanyPages.CompanySettings />} />
       </Route>
       
       <Route 
@@ -79,22 +83,6 @@ const AppRoutes = () => {
         element={
           <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
             <ProfilePage />
-          </PrivateRoute>
-        } 
-      />
-      <Route 
-        path="/notifications" 
-        element={
-          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
-            <Notifications />
-          </PrivateRoute>
-        } 
-      />
-      <Route 
-        path="/settings" 
-        element={
-          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
-            <Settings />
           </PrivateRoute>
         } 
       />

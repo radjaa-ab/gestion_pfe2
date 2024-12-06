@@ -45,19 +45,19 @@ export function Header() {
               />
             </div>
           </form>
-          <Link to="/notifications" className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-sidebar-foreground hover:bg-sidebar-hover"
-            >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative text-sidebar-foreground hover:bg-sidebar-hover"
+            asChild
+          >
+            <Link to={`/${user?.role}/notifications`}>
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
                 17
               </span>
-            </Button>
-          </Link>
-          
+            </Link>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -82,13 +82,13 @@ export function Header() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/" className="flex items-center">
+                <Link to={`/${user?.role}`} className="flex items-center">
                   <Home className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/settings" className="flex items-center">
+                <Link to={`/${user?.role}/settings`} className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>
