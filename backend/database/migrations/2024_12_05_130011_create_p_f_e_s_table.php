@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('description');
             $table->foreignId('student_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('encadrant_id')->nullable()->constrained('teachers')->onDelete('set null');
-            $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('company_id')->nullable()->constrained('companys')->onDelete('set null');
             $table->enum('statut', ['proposé', 'validé', 'refusé', 'en_cours', 'terminé']);
             $table->timestamps();
         });
