@@ -33,7 +33,7 @@ export const useAuth = () => {
     fetchUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<User> => {
+  const login = async (email: string, password: string, _rememberMe?: boolean): Promise<User> => {
     try {
       const response = await api.post('/login', { email, password });
       const loggedInUser = response.data.user;
