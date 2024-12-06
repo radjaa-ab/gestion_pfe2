@@ -1,14 +1,14 @@
-//import React from 'react'
+import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { PageContainer } from '@/components/PageContainer'
 
 export default function ResourceRequest() {
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Resource Request</h2>
+    <PageContainer title="Resource Request">
       <Card>
         <CardHeader>
           <CardTitle>Request Resources</CardTitle>
@@ -35,7 +35,7 @@ export default function ResourceRequest() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   )
 }
 

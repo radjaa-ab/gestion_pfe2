@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
+import { PageContainer } from '@/components/PageContainer'
 
 type NotificationType = 'all' | 'info' | 'warning' | 'success'
 
@@ -65,8 +66,7 @@ export default function Notifications() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-theme(spacing.16)-theme(spacing.12))]">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Notifications</h2>
+    <PageContainer title="Notifications">
       <div className="flex justify-between items-center mb-4">
         <Badge variant="secondary" className="text-sm">
           {unreadCount} unread
@@ -88,11 +88,11 @@ export default function Notifications() {
           </Button>
         </div>
       </div>
-      <Card className="flex-1 overflow-hidden">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-xl font-bold">Your Notifications</CardTitle>
+          <CardTitle>Your Notifications</CardTitle>
         </CardHeader>
-        <CardContent className="h-[calc(100%-5rem)] overflow-auto">
+        <CardContent>
           {filteredNotifications.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400 py-4">No notifications to display.</p>
           ) : (
@@ -119,7 +119,7 @@ export default function Notifications() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   )
 }
 

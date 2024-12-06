@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
+import { PageContainer } from '@/components/PageContainer'
 
 export default function ScheduleManagement() {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Schedule Management</h2>
+    <PageContainer title="Schedule Management">
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -59,7 +59,7 @@ export default function ScheduleManagement() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 
