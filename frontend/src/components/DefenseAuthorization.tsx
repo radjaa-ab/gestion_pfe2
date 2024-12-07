@@ -1,31 +1,41 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
 interface Student {
-  id: number
+  id: string
   name: string
   project: string
-  authorized: boolean
 }
 
 export function DefenseAuthorization() {
-  const [students, setStudents] = useState<Student[]>([
-    { id: 1, name: "Alice Johnson", project: "AI in Healthcare", authorized: false },
-    { id: 2, name: "Bob Smith", project: "Blockchain for Supply Chain", authorized: false },
-    { id: 3, name: "Charlie Brown", project: "IoT for Smart Cities", authorized: false },
-  ])
+  const [students, setStudents] = useState<Student[]>([])
+  const [authorizations, setAuthorizations] = useState<{[key: string]: 'authorized' | 'not_authorized' | ''}>({})
   const { toast } = useToast()
 
-  const handleAuthorization = (studentId: number, authorized: boolean) => {
-    setStudents(students.map(student => 
-      student.id === studentId ? { ...student, authorized } : student
-    ))
+  useEffect(() => {
+    // Fetch students from API
+    // For now, we'll use mock data
+    setStudents([
+      { id: '1', name: 'Asma Dahman', project: 'AI in Healthcare' },
+      { id: '2', name: 'Jane Smith', project: 'Blockchain for Supply Chain' },
+      { id: '3', name: 'Alice Johnson', project: 'IoT Smart Home' },
+    ])
+  }, [])
+
+  const handleAuthorizationChange = (studentId: string, value: 'authorized' | 'not_authorized') => {
+    setAuthorizations(prev => ({ ...prev, [studentId]: value }))
+  }
+
+  const handleSubmit = () => {
+    // Submit authorizations to API
+    console.log('Authorizations:', authorizations)
     toast({
-      title: authorized ? "Student Authorized" : "Student Not Authorized",
-      description: `${students.find(s => s.id === studentId)?.name} has been ${authorized ? 'authorized' : 'not authorized'} for defense.`,
+      title: "Authorizations submitted",
+      description: "Defense authorizations have been submitted successfully.",
     })
   }
 
@@ -50,15 +60,15 @@ export function DefenseAuthorization() {
                 <TableCell>{student.project}</TableCell>
                 <TableCell>
                   <Select
-                    onValueChange={(value) => handleAuthorization(student.id, value === 'authorized')}
-                    defaultValue={student.authorized ? 'authorized' : 'not_authorized'}
+                    value={authorizations[student.id] || ''}
+                    onValueChange={(value: 'authorized' | 'not_authorized') => handleAuthorizationChange(student.id, value)}
                   >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select authorization" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="authorized">Authorized (Session 1)</SelectItem>
-                      <SelectItem value="not_authorized">Not Authorized (Session 2)</SelectItem>
+                      <SelectItem value="authorized">Authorized (Session 1 - June)</SelectItem>
+                      <SelectItem value="not_authorized">Not Authorized (Session 2 - September)</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>
@@ -66,6 +76,7 @@ export function DefenseAuthorization() {
             ))}
           </TableBody>
         </Table>
+        <Button onClick={handleSubmit} className="mt-4">Submit Authorizations</Button>
       </CardContent>
     </Card>
   )

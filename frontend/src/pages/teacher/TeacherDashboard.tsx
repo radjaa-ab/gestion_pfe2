@@ -12,6 +12,8 @@ import { FileText, Users, Calendar } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StatusBadge } from '../../components/status-badge'
 import { Project } from '../types'
+import { TeacherWishList } from '@/components/teacherWishList'
+import { DefenseAuthorization } from '@/components/DefenseAuthorization'
 
 export default function TeacherDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
@@ -243,6 +245,9 @@ export default function TeacherDashboard() {
           </Table>
         </CardContent>
       </Card>
+      <TeacherWishList />
+      <DefenseAuthorization />
     </div>
   )
 }
+
