@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import React from "react";
-import { Outlet } from "react-router-dom";
-import { Sidebar } from "./sidebar";
-import { Header } from "./header";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import React from "react"
+import { Outlet } from "react-router-dom"
+import { Sidebar } from "./sidebar"
+import { Header } from "./header"
+import { SidebarProvider } from "@/components/ui/sidebar"
 
 interface LayoutProps {
   menuItems: Array<{
@@ -12,22 +12,24 @@ interface LayoutProps {
     icon: React.ElementType;
     link: string;
   }>;
+  user?: {
+    role: string;
+  };
   children?: React.ReactNode;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-screen overflow-hidden">
-        {/* Sidebar on the left */}
-        <Sidebar menuItems={menuItems} />
+      <div className="flex flex-col h-screen w-screen overflow-hidden">
+        {/* Header at the top, full width */}
+        <Header />
         
-        {/* Main content area */}
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Header at the top */}
-          <Header />
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar on the left, under the header */}
+          <Sidebar menuItems={menuItems} />
           
-          {/* Main content below the header */}
+          {/* Main content area */}
           <main className="flex-1 overflow-y-auto bg-background">
             <div className="container mx-auto p-6 h-full">
               {children || <Outlet />}
@@ -38,3 +40,4 @@ export const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
     </SidebarProvider>
   );
 };
+

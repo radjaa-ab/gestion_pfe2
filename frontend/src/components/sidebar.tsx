@@ -6,18 +6,15 @@ import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Button } from "@/components/ui/button"
-import { LogOut, Moon, Sun } from 'lucide-react'
+import { LogOut, Moon, Sun, ChevronLeft } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
-import { Logo } from './ui/logo'
+import { Button } from "@/components/ui/button"
 
 interface SidebarProps {
   menuItems: Array<{
@@ -29,44 +26,34 @@ interface SidebarProps {
 
 export function Sidebar({ menuItems }: SidebarProps) {
   const location = useLocation()
-  useSidebar()
+  const { toggleSidebar } = useSidebar()
   const { theme, toggleTheme } = useTheme()
 
   return (
     <ShadcnSidebar 
       collapsible="icon" 
-      className="border-r w-[240px] group-data-[state=collapsed]:w-[70px] shrink-0 bg-sidebar"
+      className="fixed left-0 top-16 bottom-0 z-40 border-r w-[220px] group-data-[state=collapsed]:w-[60px] shrink-0 bg-gradient-to-b from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950 transition-all duration-300 ease-in-out flex flex-col"
     >
-      <SidebarHeader className="border-b px-2 py-3">
-        <div className="flex items-center gap-3 px-2">
-          <Logo />
-          <h2 className="text-lg font-semibold truncate group-data-[state=collapsed]:hidden">
-            PFE Platform
-          </h2>
-          <SidebarTrigger className="ml-auto hidden group-data-[state=expanded]:block" />
-        </div>
-      </SidebarHeader>
-      
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-2 py-4 flex-grow overflow-y-auto">
         <SidebarMenu>
           {menuItems.map((item) => (
-            <SidebarMenuItem key={item.link}>
+            <SidebarMenuItem key={item.link} className="mb-1">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <SidebarMenuButton 
                     asChild 
                     isActive={location.pathname === item.link}
-                    className="w-full justify-start px-2"
+                    className="w-full justify-start px-3 py-2 text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 text-sm"
                   >
                     <Link to={item.link} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
                       <span className="truncate group-data-[state=collapsed]:hidden">
                         {item.label}
                       </span>
                     </Link>
                   </SidebarMenuButton>
                 </TooltipTrigger>
-                <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
+                <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block bg-indigo-800 text-white">
                   {item.label}
                 </TooltipContent>
               </Tooltip>
@@ -75,57 +62,39 @@ export function Sidebar({ menuItems }: SidebarProps) {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="border-t mt-auto">
-        <div className="p-2 flex flex-col gap-1">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start px-2"
-                onClick={toggleTheme}
-              >
-                {theme === "dark" ? (
-                  <>
-                    <Sun className="h-4 w-4 mr-3" />
-                    <span className="group-data-[state=collapsed]:hidden">Light mode</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className="h-4 w-4 mr-3" />
-                    <span className="group-data-[state=collapsed]:hidden">Dark mode</span>
-                  </>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
-              {theme === "dark" ? "Light mode" : "Dark mode"}
-            </TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start px-2"
-              >
-                <LogOut className="h-4 w-4 mr-3" />
-                <span className="group-data-[state=collapsed]:hidden">Logout</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
-              Logout
-            </TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SidebarTrigger className="hidden group-data-[state=collapsed]:flex w-full px-2 h-9 items-center justify-start" />
-            </TooltipTrigger>
-            <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
-              Toggle sidebar
-            </TooltipContent>
-          </Tooltip>
-        </div>
+      <SidebarFooter className="border-t border-white/10 px-2 py-4 space-y-2 sticky bottom-0 bg-gradient-to-b from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950">
+        <Button
+          variant="ghost"
+          onClick={toggleSidebar}
+          className="w-full justify-start text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out"
+        >
+          <ChevronLeft className="h-5 w-5 mr-2 group-data-[state=collapsed]:rotate-180" />
+          <span className="group-data-[state=collapsed]:hidden">Collapse</span>
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={toggleTheme}
+          className="w-full justify-start text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out"
+        >
+          {theme === "dark" ? (
+            <>
+              <Sun className="h-5 w-5 mr-2" />
+              <span className="group-data-[state=collapsed]:hidden">Light mode</span>
+            </>
+          ) : (
+            <>
+              <Moon className="h-5 w-5 mr-2" />
+              <span className="group-data-[state=collapsed]:hidden">Dark mode</span>
+            </>
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out"
+        >
+          <LogOut className="h-5 w-5 mr-2" />
+          <span className="group-data-[state=collapsed]:hidden">Logout</span>
+        </Button>
       </SidebarFooter>
     </ShadcnSidebar>
   )

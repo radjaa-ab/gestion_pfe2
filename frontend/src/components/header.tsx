@@ -1,104 +1,84 @@
-"use client"
-
-import { Link } from "react-router-dom"
-import { Bell, Search, User, Settings, Home, Menu } from 'lucide-react'
-import { Input } from "@/components/ui/input"
+import { Bell, User, Home, Settings, LogOut } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useAuth } from "../hooks/useAuth"
-import { useSidebar } from "@/components/ui/sidebar"
+import { Input } from "@/components/ui/input"
+import { useAuth } from '@/hooks/useAuth'
+import { Logo } from './ui/logo'
+import { Link } from "react-router-dom";
 
 export function Header() {
   const { user, logout } = useAuth()
-  const { toggleSidebar } = useSidebar()
-
-  const handleLogout = () => {
-    logout()
-    // Redirect to login page or show a logout confirmation
-  }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-sidebar">
-      <div className="container mx-auto flex h-14 items-center justify-between px-4">
-        <div className="flex items-center">
-          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
-            <Menu className="h-5 w-5 text-sidebar-foreground" />
-          </Button>
-          <Link to="/" className="flex items-center font-bold text-xl text-sidebar-foreground">
-            PFE Platform
-          </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-gradient-to-r from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950">
+      <div className="container mx-auto flex h-full items-center justify-between px-6">
+        <div className="flex items-center space-x-2 mr-auto">
+          <Logo className="w-8 h-8 text-white" />
+          <span className="text-white text-xl font-semibold">PFE Platform</span>
+        </div>
+        <div className="flex-1 flex justify-center">
+          <Input
+            placeholder="Search..."
+            className="w-full max-w-md bg-white/10 border-0 text-white placeholder:text-gray-300 focus:bg-white/20 focus:text-white transition-all duration-200 ease-in-out rounded-full"
+          />
         </div>
         <div className="flex items-center space-x-4">
-          <form className="w-[300px]" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search..."
-                className="pl-8 w-full bg-white/10 border-0 text-sidebar-foreground placeholder:text-sidebar-foreground/60 focus:bg-white focus:text-foreground"
-              />
-            </div>
-          </form>
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-sidebar-foreground hover:bg-sidebar-hover"
+            className="relative text-white hover:bg-white/10 rounded-full transition-all duration-200 ease-in-out transform hover:scale-110"
             asChild
           >
             <Link to={`/${user?.role}/notifications`}>
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
+              <Bell className="h-6 w-6" />
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center animate-pulse">
                 17
               </span>
             </Link>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.profilePic} alt={user?.name} />
-                  <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
-                </Avatar>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-white/10 transition-all duration-200 ease-in-out transform hover:scale-110">
+                <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <div className="flex items-center justify-start gap-2 p-2">
-                <div className="flex flex-col space-y-1 leading-none">
-                  <p className="font-medium">{user?.name}</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+            <DropdownMenuContent className="w-56 mt-2 bg-indigo-800 dark:bg-indigo-950 text-white border border-indigo-600" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user?.name}</p>
+                  <p className="text-sm text-indigo-300">{user?.email}</p>
                 </div>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-indigo-600" />
+              <DropdownMenuItem asChild className="hover:bg-indigo-700 focus:bg-indigo-700">
                 <Link to="/profile" className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className="hover:bg-indigo-700 focus:bg-indigo-700">
                 <Link to={`/${user?.role}`} className="flex items-center">
                   <Home className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className="hover:bg-indigo-700 focus:bg-indigo-700">
                 <Link to={`/${user?.role}/settings`} className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={handleLogout}>
-                <span className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </span>
+              <DropdownMenuSeparator className="bg-indigo-600" />
+              <DropdownMenuItem onSelect={logout} className="hover:bg-indigo-700 focus:bg-indigo-700">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
