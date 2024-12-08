@@ -29,13 +29,13 @@ interface SidebarProps {
 
 export function Sidebar({ menuItems }: SidebarProps) {
   const location = useLocation()
-  useSidebar()
+  const { state } = useSidebar()
   const { theme, toggleTheme } = useTheme()
 
   return (
     <ShadcnSidebar 
       collapsible="icon" 
-      className="border-r w-[240px] group-data-[state=collapsed]:w-[70px] shrink-0 bg-sidebar"
+      className="border-r w-[240px] group-data-[state=collapsed]:w-[70px] h-screen bg-sidebar"
     >
       <SidebarHeader className="border-b px-2 py-3">
         <div className="flex items-center gap-3 px-2">
@@ -47,7 +47,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-2 flex-grow">
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.link}>
@@ -119,7 +119,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
           
           <Tooltip>
             <TooltipTrigger asChild>
-              <SidebarTrigger className="hidden group-data-[state=collapsed]:flex w-full px-2 h-9 items-center justify-start" />
+              <SidebarTrigger className="hidden w-full group-data-[state=collapsed]:flex px-2 h-9 items-center justify-start" />
             </TooltipTrigger>
             <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block">
               Toggle sidebar

@@ -12,7 +12,7 @@ import { FileText, Users, Calendar } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StatusBadge } from '../../components/status-badge'
 import { Project } from '../types'
-import { TeacherWishList } from '@/components/teacherWishList'
+import TeacherWishlist from '@/pages/teacher/TeacherWishList'
 import { DefenseAuthorization } from '@/components/DefenseAuthorization'
 
 export default function TeacherDashboard() {
@@ -245,7 +245,7 @@ export default function TeacherDashboard() {
           </Table>
         </CardContent>
       </Card>
-      <TeacherWishList />
+      <TeacherWishlist />
       <DefenseAuthorization />
     </div>
   )
