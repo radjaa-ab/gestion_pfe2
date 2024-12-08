@@ -10,8 +10,36 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useToast } from "@/hooks/use-toast"
 import { FileText, Clock, Calendar, Plus, Edit, Trash } from 'lucide-react'
-import { StatusBadge } from '../../components/status-badge'
-import { Project, Task, ProposedProject } from '../types'
+import { StatusBadge, StatusBadgeProps } from '../../components/status-badge'
+import { PageContainer } from '@/components/PageContainer'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+interface Project {
+  id: number
+  title: string
+  description: string
+  progress: number
+  deadline?: string
+  students: string[]
+  status: string
+  proposedBy: string
+  approvalStatus: string
+}
+
+interface Task {
+  id: number
+  title: string
+  dueDate: string
+  status: string
+}
+
+interface ProposedProject {
+  id: number
+  title: string
+  description: string
+  proposedBy: string
+  status: StatusBadgeProps['status']
+}
 
 export default function StudentDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
@@ -24,7 +52,9 @@ export default function StudentDashboard() {
   const [newProject, setNewProject] = useState<Omit<ProposedProject, 'id' | 'proposedBy' | 'status'>>({ title: '', description: '' })
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null)
   const [notifications, setNotifications] = useState<{ id: number; message: string }[]>([])
+  const [partnerNotification, setPartnerNotification] = useState<string | null>(null);
   const { toast } = useToast()
+  const [partnershipRequest, setPartnershipRequest] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     // Simulating fetching projects
@@ -108,6 +138,35 @@ export default function StudentDashboard() {
     setNotifications(prev => prev.filter(notification => notification.id !== id))
   }
 
+  const handlePartnerSelection = (partnerId: string) => {
+    // In a real application, you would send a request to the server here
+    setPartnerNotification(`A partnership request has been sent to the selected student.`);
+    toast({
+      title: "Partner Request Sent",
+      description: "The selected student will be notified of your partnership request.",
+    });
+
+    // Simulate receiving a partnership request after a short delay
+    setTimeout(() => {
+      setPartnershipRequest({ id: parseInt(partnerId.replace('student', '')), name: `Student ${partnerId.replace('student', '')}` });
+    }, 5000); // 5 seconds delay
+  };
+
+  const handlePartnershipRequest = (accepted: boolean) => {
+    if (accepted) {
+      toast({
+        title: "Partnership Accepted",
+        description: `You have accepted the partnership request from ${partnershipRequest?.name}.`,
+      });
+    } else {
+      toast({
+        title: "Partnership Declined",
+        description: `You have declined the partnership request from ${partnershipRequest?.name}.`,
+      });
+    }
+    setPartnershipRequest(null);
+  };
+
   // Function to safely get the next deadline
   const getNextDeadline = (): string => {
     const deadlines = projects
@@ -122,225 +181,267 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Student Dashboard</h2>
+    <PageContainer title="Student Dashboard">
+      <div className="space-y-6">
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Student Dashboard</h2>
 
-      {notifications.map((notification) => (
-        <Alert key={notification.id}>
-          <AlertTitle>Notification</AlertTitle>
-          <AlertDescription>{notification.message}</AlertDescription>
-          <Button variant="outline" size="sm" onClick={() => handleNotificationDismiss(notification.id)}>
-            Dismiss
-          </Button>
-        </Alert>
-      ))}
+        {partnerNotification && (
+          <Alert>
+            <AlertTitle>Partner Request</AlertTitle>
+            <AlertDescription>{partnerNotification}</AlertDescription>
+            <Button variant="outline" size="sm" onClick={() => setPartnerNotification(null)}>
+              Dismiss
+            </Button>
+          </Alert>
+        )}
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {notifications.map((notification) => (
+          <Alert key={notification.id}>
+            <AlertTitle>Notification</AlertTitle>
+            <AlertDescription>{notification.message}</AlertDescription>
+            <Button variant="outline" size="sm" onClick={() => handleNotificationDismiss(notification.id)}>
+              Dismiss
+            </Button>
+          </Alert>
+        ))}
+
+        {partnershipRequest && (
+          <Alert>
+            <AlertTitle>Partnership Request</AlertTitle>
+            <AlertDescription>
+              {partnershipRequest.name} has requested to be your partner (binome). Do you accept?
+            </AlertDescription>
+            <div className="mt-2 space-x-2">
+              <Button variant="outline" size="sm" onClick={() => handlePartnershipRequest(true)}>
+                Accept
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handlePartnershipRequest(false)}>
+                Decline
+              </Button>
+            </div>
+          </Alert>
+        )}
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{projects.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Tasks</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{tasks.filter(task => task.status !== 'Completed').length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Next Deadline</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getNextDeadline()}</div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>My Projects</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{projects.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Tasks</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{tasks.filter(task => task.status !== 'Completed').length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Next Deadline</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{getNextDeadline()}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>My Projects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {projects.map((project) => (
-            <div key={project.id} className="mb-4">
-              <h3 className="text-lg font-semibold">{project.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{project.description}</p>
-              <div className="mt-2 flex items-center">
-                <Progress value={project.progress} className="w-full" />
-                <span className="ml-2 text-sm font-medium">{project.progress}%</span>
+            {projects.map((project) => (
+              <div key={project.id} className="mb-4">
+                <h3 className="text-lg font-semibold">{project.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{project.description}</p>
+                <div className="mt-2 flex items-center">
+                  <Progress value={project.progress} className="w-full" />
+                  <span className="ml-2 text-sm font-medium">{project.progress}%</span>
+                </div>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Deadline: {project.deadline || 'Not set'}</p>
+                <div className="mt-2">
+                  <Label htmlFor={`partner-${project.id}`}>Select Partner (Binome)</Label>
+                  <Select onValueChange={(value) => handlePartnerSelection(value)}>
+                    <SelectTrigger id={`partner-${project.id}`}>
+                      <SelectValue placeholder="Select a partner" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student1">Student 1</SelectItem>
+                      <SelectItem value="student2">Student 2</SelectItem>
+                      <SelectItem value="student3">Student 3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="mt-2">Submit Update</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Submit Project Update</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmitUpdate} className="space-y-4">
+                      <Textarea
+                        placeholder="Enter your project update here..."
+                        value={newUpdate}
+                        onChange={(e) => setNewUpdate(e.target.value)}
+                        required
+                      />
+                      <div className="flex justify-end space-x-2">
+                        <Button type="button" variant="outline" onClick={() => setIsUpdateDialogOpen(false)}>Cancel</Button>
+                        <Button type="submit">Submit Update</Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Deadline: {project.deadline || 'Not set'}</p>
-              <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>My Tasks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Task</TableHead>
+                  <TableHead>Due Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tasks.map((task) => (
+                  <TableRow key={task.id}>
+                    <TableCell>{task.title}</TableCell>
+                    <TableCell>{task.dueDate}</TableCell>
+                    <TableCell>{task.status}</TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" onClick={() => {
+                        setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'Completed' } : t))
+                        toast({
+                          title: "Task completed",
+                          description: `${task.title} marked as completed.`,
+                        })
+                      }}>Mark as Completed</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex justify-between items-center">
+              <span>My Proposed Projects</span>
+              <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-2">Submit Update</Button>
+                  <Button size="sm"><Plus className="mr-2 h-4 w-4" /> Propose New Project</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Submit Project Update</DialogTitle>
+                    <DialogTitle>{editingProjectId ? 'Edit Project Proposal' : 'Propose New Project'}</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleSubmitUpdate} className="space-y-4">
-                    <Textarea
-                      placeholder="Enter your project update here..."
-                      value={newUpdate}
-                      onChange={(e) => setNewUpdate(e.target.value)}
-                      required
-                    />
+                  <form onSubmit={handleSubmitProject} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Project Title</Label>
+                      <Input
+                        id="title"
+                        value={newProject.title}
+                        onChange={(e) => setNewProject(prev => ({ ...prev, title: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Project Description</Label>
+                      <Textarea
+                        id="description"
+                        value={newProject.description}
+                        onChange={(e) => setNewProject(prev => ({ ...prev, description: e.target.value }))}
+                        required
+                      />
+                    </div>
                     <div className="flex justify-end space-x-2">
-                      <Button type="button" variant="outline" onClick={() => setIsUpdateDialogOpen(false)}>Cancel</Button>
-                      <Button type="submit">Submit Update</Button>
+                      <Button type="button" variant="outline" onClick={() => {
+                        setIsProjectDialogOpen(false)
+                        setNewProject({ title: '', description: '' })
+                        setEditingProjectId(null)
+                      }}>Cancel</Button>
+                      <Button type="submit">{editingProjectId ? 'Update' : 'Submit'} Proposal</Button>
                     </div>
                   </form>
                 </DialogContent>
               </Dialog>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>My Tasks</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Task</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tasks.map((task) => (
-                <TableRow key={task.id}>
-                  <TableCell>{task.title}</TableCell>
-                  <TableCell>{task.dueDate}</TableCell>
-                  <TableCell>{task.status}</TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm" onClick={() => {
-                      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'Completed' } : t))
-                      toast({
-                        title: "Task completed",
-                        description: `${task.title} marked as completed.`,
-                      })
-                    }}>Mark as Completed</Button>
-                  </TableCell>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {proposedProjects.map((project) => (
+                  <TableRow key={project.id}>
+                    <TableCell>{project.title}</TableCell>
+                    <TableCell>{project.description}</TableCell>
+                    <TableCell><StatusBadge status={project.status} /></TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEditProject(project)}><Edit className="h-4 w-4" /></Button>
+                      <Button variant="outline" size="sm" onClick={() => handleDeleteProject(project.id)}><Trash className="h-4 w-4" /></Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <span>My Proposed Projects</span>
-            <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm"><Plus className="mr-2 h-4 w-4" /> Propose New Project</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{editingProjectId ? 'Edit Project Proposal' : 'Propose New Project'}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmitProject} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Project Title</Label>
-                    <Input
-                      id="title"
-                      value={newProject.title}
-                      onChange={(e) => setNewProject(prev => ({ ...prev, title: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Project Description</Label>
-                    <Textarea
-                      id="description"
-                      value={newProject.description}
-                      onChange={(e) => setNewProject(prev => ({ ...prev, description: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => {
-                      setIsProjectDialogOpen(false)
-                      setNewProject({ title: '', description: '' })
-                      setEditingProjectId(null)
-                    }}>Cancel</Button>
-                    <Button type="submit">{editingProjectId ? 'Update' : 'Submit'} Proposal</Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {proposedProjects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell>{project.title}</TableCell>
-                  <TableCell>{project.description}</TableCell>
-                  <TableCell><StatusBadge status={project.status} /></TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEditProject(project)}><Edit className="h-4 w-4" /></Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDeleteProject(project.id)}><Trash className="h-4 w-4" /></Button>
-                  </TableCell>
+        <Card>
+          <CardHeader>
+            <CardTitle>Projects Proposed by Teachers/Companies</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Proposed By</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Projects Proposed by Teachers/Companies</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Proposed By</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {teacherProjects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell>{project.title}</TableCell>
-                  <TableCell>{project.description}</TableCell>
-                  <TableCell>{project.proposedBy}</TableCell>
-                  <TableCell><StatusBadge status={project.status} /></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+              </TableHeader>
+              <TableBody>
+                {teacherProjects.map((project) => (
+                  <TableRow key={project.id}>
+                    <TableCell>{project.title}</TableCell>
+                    <TableCell>{project.description}</TableCell>
+                    <TableCell>{project.proposedBy}</TableCell>
+                    <TableCell><StatusBadge status={project.status} /></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </PageContainer>
   )
 }
 

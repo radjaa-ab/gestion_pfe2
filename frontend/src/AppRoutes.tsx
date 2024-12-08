@@ -21,6 +21,17 @@ import { DefenseAuthorization } from './components/DefenseAuthorization';
 import DefenseScheduling from './components/DefenseScheduling';
 import { GradeEntry } from './components/GradeEntry';
 import { AutomaticAssignment } from './components/AutomaticAssignment';
+import { AdminUserManagement } from './test/AdminUserManagement';
+import { CollaborationHub } from './test/CollaborationHub';
+import { EmailManagement } from './test/EmailManagement';
+import { SupervisorAssignment } from './test/SupervisorAssignment';
+import { FeedbackSystem } from './test/FeedbackSystem';
+import { ProjectModification } from './test/ProjectModification';
+import { ProjectProgress } from './test/ProjectProgress';
+import { ProjectSubmission } from './test/ProjectSubmission';
+import { ResourceAllocation } from './test/ResourceAllocation';
+import { ReportGenerator } from './test/ReportGenerator';
+import { SubjectValidation } from './test/SubjectValidation';
 
 const AppRoutes = () => {
   return (
@@ -101,6 +112,18 @@ const AppRoutes = () => {
       />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/adminusermanagement" element={<AdminUserManagement />} />
+      <Route path="/collaboration" element={<CollaborationHub />} />
+      <Route path="/emailmanagement" element={<EmailManagement />} />
+      <Route path="/supervisor" element={<SupervisorAssignment />} />
+      <Route path="/feedback" element={<FeedbackSystem />} />
+      <Route path="/modification" element={<ProjectModification/>} />
+      <Route path="/progress" element={<ProjectProgress/>} />
+      <Route path="/submission" element={<ProjectSubmission/>} />
+      <Route path="/allocation" element={<ResourceAllocation/>} />
+      <Route path="/report" element={<ReportGenerator/>} />
+      <Route path="/validation" element={<SubjectValidation/>} />
+
     </Routes>
   );
 };

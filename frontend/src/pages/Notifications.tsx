@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 import { PageContainer } from '@/components/PageContainer'
+import { Input } from "@/components/ui/input"
 
 type NotificationType = 'all' | 'info' | 'warning' | 'success'
 
@@ -28,6 +29,8 @@ const initialNotifications: Notification[] = [
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
   const [filter, setFilter] = useState<NotificationType>('all')
+  const [newNotification, setNewNotification] = useState('')
+  const [newNotificationType, setNewNotificationType] = useState<'info' | 'warning' | 'success'>('info')
   const { toast } = useToast()
 
   const filteredNotifications = notifications.filter(notification => 
@@ -51,6 +54,30 @@ export default function Notifications() {
     toast({
       title: "All notifications marked as read",
       description: "All notifications have been marked as read.",
+    })
+  }
+
+  const handleAddNotification = () => {
+    if (newNotification.trim() === '') {
+      toast({
+        title: "Error",
+        description: "Notification message cannot be empty.",
+        variant: "destructive",
+      })
+      return
+    }
+    const newNotificationObj: Notification = {
+      id: notifications.length + 1,
+      type: newNotificationType,
+      message: newNotification,
+      date: new Date().toISOString().split('T')[0],
+      read: false,
+    }
+    setNotifications([...notifications, newNotificationObj])
+    setNewNotification('')
+    toast({
+      title: "Notification added",
+      description: "A new notification has been added.",
     })
   }
 
@@ -88,6 +115,32 @@ export default function Notifications() {
           </Button>
         </div>
       </div>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Add New Notification</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex space-x-2">
+            <Input
+              value={newNotification}
+              onChange={(e) => setNewNotification(e.target.value)}
+              placeholder="Enter notification message"
+              className="flex-grow"
+            />
+            <Select value={newNotificationType} onValueChange={(value: 'info' | 'warning' | 'success') => setNewNotificationType(value)}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="info">Info</SelectItem>
+                <SelectItem value="warning">Warning</SelectItem>
+                <SelectItem value="success">Success</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={handleAddNotification}>Add</Button>
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Your Notifications</CardTitle>

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 
-type StatusBadgeProps = {
+export type StatusBadgeProps = {
   status: 'validated' | 'rejected' | 'pending' | 'Not Started' | 'changes_requested' | 'Pending Approval' | 'Project Updated' | 'Approved' | 'Pending Changes' | 'In Progress' | 'Completed';
 };
 
