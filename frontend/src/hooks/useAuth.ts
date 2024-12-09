@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import axios from 'axios';
 
 interface User {
   id: string;
@@ -24,6 +25,10 @@ export const useAuth = () => {
           setUser(response.data);
         } catch (error) {
           console.error('Failed to fetch user:', error);
+          // If the error is due to a 404, it might mean the user is not authenticated
+          if (axios.isAxiosError(error) && error.response?.status === 404) {
+            console.warn('User not found or not authenticated');
+          }
           localStorage.removeItem('token');
         }
       }

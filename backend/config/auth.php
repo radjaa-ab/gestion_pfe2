@@ -41,11 +41,11 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'sanctum',
+            'driver' => 'sanctum', // Use 'token' for Laravel 9 and later
             'provider' => 'users',
+            'hash' => false, // Important for token-based authentication
         ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | User Providers
