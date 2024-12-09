@@ -18,7 +18,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-gradient-to-r from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950">
-      <div className="container mx-auto flex h-full items-center justify-between px-6">
+      <div className="flex h-full items-center justify-between px-6">
         <div className="flex items-center space-x-2 mr-auto">
           <Logo className="w-8 h-8 text-white" />
           <span className="text-white text-xl font-semibold">PFE Platform</span>

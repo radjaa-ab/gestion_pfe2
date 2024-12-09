@@ -9,18 +9,43 @@ import CompanyLayout from './layouts/CompanyLayout';
 import ProfilePage from './pages/ProfilePage';
 import NotFound from './pages/NotFound';
 
-// Import your dashboard components
-import * as AdminPages from './pages/admin';
-import * as TeacherPages from './pages/teacher';
-import * as StudentPages from './pages/student';
-import * as CompanyPages from './pages/company';
+// Import dashboard components
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/users';
+import AdminProjects from './pages/admin/AdminProjects';
+import AdminSchedule from './pages/admin/AdminSchedule';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminNotifications from './pages/admin/AdminNotifications';
+import AdminJuryManagement from './pages/admin/AdminJuryManagement';
+import AdminSoutenancePlanning from './pages/admin/AdminSoutenancePlanning';
 
-// Import new components
-import { ThemeSelection } from './components/ThemeSelection';
-import { DefenseAuthorization } from './components/DefenseAuthorization';
-import DefenseScheduling from './components/DefenseScheduling';
-import { GradeEntry } from './components/GradeEntry';
-import { AutomaticAssignment } from './components/AutomaticAssignment';
+import TeacherDashboard from './pages/teacher/TeacherDashboard';
+import TeacherProjects from './pages/teacher/TeacherProjects';
+import TeacherSchedule from './pages/teacher/TeacherSchedule';
+import TeacherFeedback from './pages/teacher/TeacherFeedback';
+import TeacherProgressReports from './pages/teacher/TeacherProgressReports';
+import TeacherProjectProposals from './pages/teacher/TeacherProjectProposals';
+import TeacherAuthorizationForm from './pages/teacher/TeacherAuthorizationForm';
+import TeacherWishlist from './pages/teacher/TeacherWishList';
+import TeacherAvailability from './pages/teacher/TeacherAvailability';
+import TeacherGrading from './pages/teacher/TeacherGrading';
+
+import StudentDashboard from './pages/student/StudentDashboard';
+import StudentProjects from './pages/student/StudentProjects';
+import StudentSchedule from './pages/student/StudentSchedule';
+import StudentProgressReport from './pages/student/StudentProgressReport';
+import StudentProjectProposal from './pages/student/StudentProjectProposal';
+import StudentTeamFormation from './pages/student/StudentTeamFormation';
+import StudentSubmitProject from './pages/student/StudentSubmitProject';
+import StudentPFESelection from './pages/student/StudentPFESelection';
+
+import CompanyDashboard from './pages/company/CompanyDashboard';
+import CompanyProjects from './pages/company/CompanyProjects';
+import CompanyProjectProposal from './pages/company/CompanyProjectProposal';
+import CompanyNotifications from './pages/company/CompanyNotifications';
+
+import Notifications from './pages/Notifications';
+import Settings from './pages/settings';
 import { AdminUserManagement } from './test/AdminUserManagement';
 import { CollaborationHub } from './test/CollaborationHub';
 import { EmailManagement } from './test/EmailManagement';
@@ -44,15 +69,14 @@ const AppRoutes = () => {
           <AdminLayout />
         </PrivateRoute>
       }>
-        <Route index element={<AdminPages.AdminDashboard />} />
-        <Route path="users" element={<AdminPages.AdminUsers />} />
-        <Route path="projects" element={<AdminPages.AdminProjects />} />
-        <Route path="schedule" element={<AdminPages.AdminSchedule />} />
-        <Route path="notifications" element={<AdminPages.AdminNotifications />} />
-        <Route path="settings" element={<AdminPages.AdminSettings />} />
-        <Route path="theme-selection" element={<ThemeSelection userRole="admin" themesToValidate={[]} />} />
-        <Route path="automatic-assignment" element={<AutomaticAssignment />} />
-        <Route path="defense-scheduling" element={<DefenseScheduling />} />
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="projects" element={<AdminProjects />} />
+        <Route path="schedule" element={<AdminSchedule />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="notifications" element={<AdminNotifications />} />
+        <Route path="jury-management" element={<AdminJuryManagement />} />
+        <Route path="soutenance-planning" element={<AdminSoutenancePlanning />} />
       </Route>
       
       <Route path="/teacher" element={
@@ -60,17 +84,16 @@ const AppRoutes = () => {
           <TeacherLayout />
         </PrivateRoute>
       }>
-        <Route index element={<TeacherPages.TeacherDashboard />} />
-        <Route path="projects" element={<TeacherPages.TeacherProjects />} />
-        <Route path="schedule" element={<TeacherPages.TeacherSchedule />} />
-        <Route path="feedback-submission" element={<TeacherPages.TeacherFeedback />} />
-        <Route path="progress-report" element={<TeacherPages.TeacherProgressReports />} />
-        <Route path="project-proposal" element={<TeacherPages.TeacherProjectProposals />} />
-        <Route path="notifications" element={<TeacherPages.TeacherNotifications />} />
-        <Route path="settings" element={<TeacherPages.TeacherSettings />} />
-        <Route path="theme-selection" element={<ThemeSelection userRole="teacher" themesToValidate={[]} />} />
-        <Route path="defense-authorization" element={<DefenseAuthorization />} />
-        <Route path="grade-entry" element={<GradeEntry />} />
+        <Route index element={<TeacherDashboard />} />
+        <Route path="projects" element={<TeacherProjects />} />
+        <Route path="schedule" element={<TeacherSchedule />} />
+        <Route path="feedback-submission" element={<TeacherFeedback />} />
+        <Route path="progress-report" element={<TeacherProgressReports />} />
+        <Route path="project-proposal" element={<TeacherProjectProposals />} />
+        <Route path="authorization-form" element={<TeacherAuthorizationForm />} />
+        <Route path="wishlist" element={<TeacherWishlist />} />
+        <Route path="availability" element={<TeacherAvailability />} />
+        <Route path="grading" element={<TeacherGrading />} />
       </Route>
       
       <Route path="/student" element={
@@ -78,16 +101,14 @@ const AppRoutes = () => {
           <StudentLayout />
         </PrivateRoute>
       }>
-        <Route index element={<StudentPages.StudentDashboard />} />
-        <Route path="projects" element={<StudentPages.StudentProjects />} />
-        <Route path="schedule" element={<StudentPages.StudentSchedule />} />
-        <Route path="progress-report" element={<StudentPages.StudentProgressReport />} />
-        <Route path="project-proposal" element={<StudentPages.StudentProjectProposal />} />
-        <Route path="team-formation" element={<StudentPages.StudentTeamFormation />} />
-        <Route path="submit-project" element={<StudentPages.StudentSubmitProject />} />
-        <Route path="pfe-selection" element={<StudentPages.StudentPFESelection />} />
-        <Route path="notifications" element={<StudentPages.StudentNotifications />} />
-        <Route path="settings" element={<StudentPages.StudentSettings />} />
+        <Route index element={<StudentDashboard />} />
+        <Route path="projects" element={<StudentProjects />} />
+        <Route path="schedule" element={<StudentSchedule />} />
+        <Route path="progress-report" element={<StudentProgressReport />} />
+        <Route path="project-proposal" element={<StudentProjectProposal />} />
+        <Route path="team-formation" element={<StudentTeamFormation />} />
+        <Route path="submit-project" element={<StudentSubmitProject />} />
+        <Route path="pfe-selection" element={<StudentPFESelection />} />
       </Route>
       
       <Route path="/company" element={
@@ -95,11 +116,10 @@ const AppRoutes = () => {
           <CompanyLayout />
         </PrivateRoute>
       }>
-        <Route index element={<CompanyPages.CompanyDashboard />} />
-        <Route path="projects" element={<CompanyPages.CompanyProjects />} />
-        <Route path="project-proposal" element={<CompanyPages.CompanyProjectProposal />} />
-        <Route path="notifications" element={<CompanyPages.CompanyNotifications />} />
-        <Route path="settings" element={<CompanyPages.CompanySettings />} />
+        <Route index element={<CompanyDashboard />} />
+        <Route path="projects" element={<CompanyProjects />} />
+        <Route path="project-proposal" element={<CompanyProjectProposal />} />
+        <Route path="notifications" element={<CompanyNotifications />} />
       </Route>
       
       <Route 
@@ -107,6 +127,22 @@ const AppRoutes = () => {
         element={
           <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
             <ProfilePage />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/notifications" 
+        element={
+          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
+            <Notifications />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/settings" 
+        element={
+          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
+            <Settings />
           </PrivateRoute>
         } 
       />

@@ -31,9 +31,7 @@ export const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
           
           {/* Main content area */}
           <main className="flex-1 overflow-y-auto bg-background">
-            <div className="container mx-auto p-6 h-full">
-              {children || <Outlet />}
-            </div>
+            {children || <Outlet />}
           </main>
         </div>
       </div>
