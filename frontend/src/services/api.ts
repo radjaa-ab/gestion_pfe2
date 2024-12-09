@@ -55,12 +55,29 @@ export const logout = async () => {
   }
 };
 
+// Updated register function to include role
 export const register = async (userData: { name: string, email: string, password: string, role: string }) => {
   try {
     const response = await api.post('/register', userData);
     return response.data;
   } catch (error) {
     console.error('Registration error:', error);
+    throw error;
+  }
+};
+
+export const importUsers = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/import-users', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Import users error:', error);
     throw error;
   }
 };

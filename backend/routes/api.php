@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('pfes', PFEController::class);
 
     Route::post('/import-users', [ImportController::class, 'importUsers'])->middleware('role:admin');
+    
 });
 
 
