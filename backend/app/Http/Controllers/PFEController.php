@@ -3,42 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\PFE;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
 
 class PFEController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum');
-        $this->middleware('role:student,teacher,company')->only(['store', 'update', 'destroy']);
-    }
-
     public function index()
     {
-        $pfes = PFE::with(['student', 'encadrant', 'company'])->get();
+        $user = Auth::user();
+        $pfes = PFE::where('user_id', $user->id)->get();
         return response()->json($pfes);
     }
 
     public function store(Request $request)
     {
         $user = Auth::user();
-        $validatedData = $this->validatePFE($request, $user->role);
+        $validatedData = $request->validate([
+            'titre' => 'required|string|max:255',
+            'resume' => 'required|string',
+            'type' => 'required|in:classique,innovant,stage',
+            'option' => 'required|in:GL,IA,RSD,SIC',
+            'technologies' => 'required|string',
+            'besoins_materiels' => 'nullable|string',
+            'student2_id' => 'nullable|exists:users,id',
+        ]);
 
         $pfe = new PFE($validatedData);
+        $pfe->user_id = $user->id;
         $pfe->statut = 'proposé';
 
-        switch ($user->role) {
-            case 'student':
-                $pfe->student_id = $user->student->id;
-                break;
-            case 'teacher':
-                $pfe->encadrant_id = $user->teacher->id;
-                break;
-            case 'company':
-                $pfe->company_id = $user->company->id;
-                break;
+        if ($user->role === 'student') {
+            $pfe->student1_id = $user->id;
+            if ($request->student2_id) {
+                $pfe->student2_id = $request->student2_id;
+                // Send notification to the second student
+                $this->notifySecondStudent($request->student2_id, $pfe);
+            }
+        } elseif ($user->role === 'teacher') {
+            $pfe->encadrant_id = $user->id;
+            if ($request->co_encadrant_id) {
+                $pfe->co_encadrant_id = $request->co_encadrant_id;
+            }
+        } elseif ($user->role === 'company') {
+            $pfe->company_id = $user->company->id;
         }
 
         $pfe->save();
@@ -48,18 +57,23 @@ class PFEController extends Controller
 
     public function show(PFE $pfe)
     {
-        return response()->json($pfe->load(['student', 'encadrant', 'company']));
+        $this->authorize('view', $pfe);
+        return response()->json($pfe);
     }
 
     public function update(Request $request, PFE $pfe)
     {
-        $user = Auth::user();
-        
-        if (!$this->canModifyPFE($user, $pfe)) {
-            return response()->json(['message' => 'Non autorisé à modifier cette proposition de PFE.'], 403);
-        }
+        $this->authorize('update', $pfe);
 
-        $validatedData = $this->validatePFE($request, $user->role, $pfe);
+        $validatedData = $request->validate([
+            'titre' => 'string|max:255',
+            'resume' => 'string',
+            'type' => 'in:classique,innovant,stage',
+            'option' => 'in:GL,IA,RSD,SIC',
+            'technologies' => 'string',
+            'besoins_materiels' => 'nullable|string',
+        ]);
+
         $pfe->update($validatedData);
 
         return response()->json($pfe);
@@ -67,38 +81,18 @@ class PFEController extends Controller
 
     public function destroy(PFE $pfe)
     {
-        $user = Auth::user();
-        
-        if (!$this->canModifyPFE($user, $pfe)) {
-            return response()->json(['message' => 'Non autorisé à supprimer cette proposition de PFE.'], 403);
-        }
+        $this->authorize('delete', $pfe);
 
         $pfe->delete();
+
         return response()->json(null, 204);
     }
 
-    private function validatePFE(Request $request, $role, $pfe = null)
+    private function notifySecondStudent($studentId, $pfe)
     {
-        $rules = [
-            'intitule' => 'required|string|max:255',
-            'description' => 'required|string',
-            'type' => ['required', Rule::in(['classique', 'innovant', 'stage'])],
-            'option' => 'required|string|max:255',
-        ];
-
-        if ($pfe && $role === 'admin') {
-            $rules['statut'] = ['required', Rule::in(['proposé', 'validé', 'refusé', 'en_cours', 'terminé'])];
-        }
-
-        return $request->validate($rules);
-    }
-
-    private function canModifyPFE($user, $pfe)
-    {
-        return ($user->role === 'admin') ||
-               ($user->role === 'student' && $pfe->student_id === $user->student->id) ||
-               ($user->role === 'teacher' && $pfe->encadrant_id === $user->teacher->id) ||
-               ($user->role === 'company' && $pfe->company_id === $user->company->id);
+        $student = User::findOrFail($studentId);
+        // Send email notification
+        // Implement email sending logic here
     }
 }
 

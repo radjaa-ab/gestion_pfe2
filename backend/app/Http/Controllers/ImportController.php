@@ -3,75 +3,101 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Etudiant;
-use App\Models\Enseignant;
-use App\Models\Entreprise;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ImportController extends Controller
 {
     public function importUsers(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt',
-            'type' => 'required|in:etudiant,enseignant,entreprise'
+            'file' => 'required|mimes:csv,txt',
         ]);
 
         $file = $request->file('file');
-        $type = $request->input('type');
+        $csvData = array_map('str_getcsv', file($file->getPathname()));
+        array_shift($csvData); // Remove header row
 
         DB::beginTransaction();
 
         try {
-            $handle = fopen($file->getPathname(), 'r');
-            $header = fgetcsv($handle);
+            foreach ($csvData as $row) {
+                $email = $row[0];
+                $name = $row[1];
+                $surname = $row[2];
+                $role = $this->mapRole($row[3]);
+                $option = $row[4];
+                $info = $row[5];
 
-            while (($row = fgetcsv($handle)) !== false) {
-                $data = array_combine($header, $row);
+                // Generate a random password
+                $password = Str::random(10);
 
-                $user = User::create([
-                    'name' => $data['nom'] . ' ' . $data['prenom'],
-                    'email' => $data['email'],
-                    'password' => Hash::make('password'), // Temporary password
-                    'role' => $type,
-                ]);
+                $user = User::updateOrCreate(
+                    ['email' => $email],
+                    [
+                        'name' => $name . ' ' . $surname,
+                        'password' => Hash::make($password), // Hash the password
+                        'role' => $role,
+                    ]
+                );
 
-                switch ($type) {
+                // Here, you should send an email to the user with their new password
+                // For now, we'll just log it (don't do this in production!)
+                Log::info("User {$email} created with password: {$password}");
+
+                switch ($role) {
                     case 'student':
-                        Student::create([
-                            'user_id' => $user->id,
-                            'option' => $data['option'],
-                            'moyenne_m1' => $data['moyenne_m1'],
-                        ]);
+                        Student::updateOrCreate(
+                            ['user_id' => $user->id],
+                            ['option' => $option, 'moyenne_m1' => $info]
+                        );
                         break;
                     case 'teacher':
-                        Teacher::create([
-                            'user_id' => $user->id,
-                            'grade' => $data['grade'],
-                            'date_recrutement' => $data['date_recrutement'],
-                        ]);
+                        Teacher::updateOrCreate(
+                            ['user_id' => $user->id],
+                            ['grade' => $option, 'date_recrutement' => $info]
+                        );
                         break;
                     case 'company':
-                        Company::create([
-                            'user_id' => $user->id,
-                            'denomination' => $data['denomination'],
-                        ]);
+                        Company::updateOrCreate(
+                            ['user_id' => $user->id],
+                            ['denomination' => $info]
+                        );
                         break;
                 }
             }
 
-            fclose($handle);
             DB::commit();
-
-            return response()->json(['message' => 'Import successful'], 200);
+            return response()->json(['message' => 'Utilisateurs importés avec succès']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Import error: ' . $e->getMessage());
-            return response()->json(['message' => 'Import error: ' . $e->getMessage()], 500);
+            Log::error('Erreur lors de l\'importation : ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Une erreur est survenue lors de l\'importation',
+                'error' => $e->getMessage()
+            ], 500);
         }
+    }
+
+    private function mapRole($inputRole)
+    {
+        $roleMap = [
+            'GL' => 'student',
+            'IA' => 'student',
+            'RSD' => 'student',
+            'SIC' => 'student',
+            'teacher' => 'teacher',
+            'company' => 'company',
+            'admin' => 'admin',
+        ];
+
+        return $roleMap[$inputRole] ?? throw new \InvalidArgumentException("Rôle non valide : {$inputRole}");
     }
 }
 

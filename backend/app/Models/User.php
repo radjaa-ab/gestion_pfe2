@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -28,16 +29,17 @@ class User extends Authenticatable
 
     public function student()
     {
-        return $this->hasOne(student::class);
+        return $this->hasOne(Student::class);
     }
 
     public function teacher()
     {
-        return $this->hasOne(teacher::class);
+        return $this->hasOne(Teacher::class);
     }
 
     public function company()
     {
-        return $this->hasOne(company::class);
+        return $this->hasOne(Company::class);
     }
 }
+

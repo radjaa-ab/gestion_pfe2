@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class teacher extends Model
+class Teacher extends Model
 {
     use HasFactory;
 
@@ -13,6 +13,10 @@ class teacher extends Model
         'user_id',
         'grade',
         'date_recrutement',
+    ];
+
+    protected $casts = [
+        'date_recrutement' => 'date',
     ];
 
     public function user()
@@ -25,3 +29,4 @@ class teacher extends Model
         return $this->hasMany(PFE::class, 'encadrant_id');
     }
 }
+
