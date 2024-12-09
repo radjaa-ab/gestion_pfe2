@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { useAuth } from '../hooks/useAuth'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   Dialog,
@@ -19,22 +20,57 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
 import { FileUpload } from '../components/FileUpload'
 import { BookOpen, Briefcase, GraduationCap, Mail, MapPin, School, Clock, Award, Activity, Camera, Home, User, Settings } from 'lucide-react'
-import { Header } from '../components/header'
-import { Sidebar } from '../components/Sidebar'
+import { Layout } from '../components/Layout'
 import LoadingPage from '../components/LoadingPage'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Progress } from "@/components/ui/progress"
+
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Le nom doit contenir au moins 2 caractères.",
+  }),
+  email: z.string().email({
+    message: "Veuillez entrer une adresse email valide.",
+  }),
+  phone: z.string().min(10, {
+    message: "Veuillez entrer un numéro de téléphone valide.",
+  }),
+  location: z.string().min(2, {
+    message: "Veuillez entrer une localisation valide.",
+  }),
+})
+
+const profileMenuItems = [
+  { label: "Dashboard", icon: Home, link: "/" },
+  { label: "Profile", icon: User, link: "/profile" },
+  { label: "Settings", icon: Settings, link: "/settings" },
+];
 
 const ProfilePage = () => {
   const { user, updateUser } = useAuth()
-  const [name, setName] = useState(user?.name || '')
-  const [email, setEmail] = useState(user?.email || '')
-  const [phone, setPhone] = useState('123-456-7890')
-  const [location, setLocation] = useState('Algiers, Algeria')
-  const [profilePic, setProfilePic] = useState<string>(
+  const [profilePic, setProfilePic] = React.useState<string>(
     user?.profilePic || `https://api.dicebear.com/6.x/initials/svg?seed=${user?.name}`
   )
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
-  const [completionPercentage] = useState(85)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [completionPercentage] = React.useState(85)
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: "123-456-7890",
+      location: "Algiers, Algeria",
+    },
+  })
 
   const stats = [
     { label: 'Current Semester', value: '4th', icon: School },
@@ -79,16 +115,16 @@ const ProfilePage = () => {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true)
     try {
-      await updateUser({ name, email, profilePic })
+      await updateUser(values)
       toast({
         title: 'Profile updated',
         description: 'Your profile has been updated successfully.',
       })
     } catch (error) {
+      console.error('Échec de la mise à jour du profil:', error)
       toast({
         title: 'Update failed',
         description: 'Failed to update profile. Please try again.',
@@ -101,17 +137,9 @@ const ProfilePage = () => {
 
   if (!user) return <LoadingPage message="Loading profile..." />
 
-  const menuItems = [
-    { label: "Dashboard", icon: Home, link: "/" },
-    { label: "Profile", icon: User, link: "/profile" },
-    { label: "Settings", icon: Settings, link: "/settings" },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <Header />
-      <div className="flex">
-        <Sidebar menuItems={menuItems} />
+    <Layout menuItems={profileMenuItems}>
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
         <main className="flex-1">
           {/* Header Section */}
           <div className="relative bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-900 dark:to-blue-900">
@@ -145,16 +173,16 @@ const ProfilePage = () => {
                 <div className="mt-4 flex items-center space-x-4 text-purple-100">
                   <div className="flex items-center">
                     <Mail className="w-4 h-4 mr-2" />
-                    <span>{email}</span>
+                    <span>{user.email}</span>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2" />
-                    <span>{location}</span>
+                    <span>{form.getValues().location}</span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {/* Profile Completion Bar */}
             <div className="absolute bottom-0 left-0 right-0 bg-white/10 backdrop-blur-sm dark:bg-gray-800/50">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -234,51 +262,67 @@ const ProfilePage = () => {
               <TabsContent value="edit">
                 <Card>
                   <CardContent className="p-6">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="name">Full Name</Label>
-                          <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your full name"
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Full Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter your full name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                  <Input type="email" placeholder="Enter your email" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Phone</FormLabel>
+                                <FormControl>
+                                  <Input type="tel" placeholder="Enter your phone number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="location"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Location</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter your location" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="email">Email</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Phone</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="Enter your phone number"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="location">Location</Label>
-                          <Input
-                            id="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            placeholder="Enter your location"
-                          />
-                        </div>
-                      </div>
-                      <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Updating...' : 'Update Profile'}
-                      </Button>
-                    </form>
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                          {isLoading ? 'Updating...' : 'Update Profile'}
+                        </Button>
+                      </form>
+                    </Form>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -344,7 +388,7 @@ const ProfilePage = () => {
           </div>
         </main>
       </div>
-    </div>
+    </Layout>
   )
 }
 

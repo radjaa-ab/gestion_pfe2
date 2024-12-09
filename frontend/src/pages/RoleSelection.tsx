@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageContainer } from '@/components/PageContainer'
 
 const RoleSelection: React.FC = () => {
   return (
-    <div className="container mx-auto mt-10">
+    <PageContainer title="Select Your Role">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
           <CardTitle>Select Your Role</CardTitle>
@@ -26,7 +27,7 @@ const RoleSelection: React.FC = () => {
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 };
 

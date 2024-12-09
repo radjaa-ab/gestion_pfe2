@@ -1,106 +1,102 @@
-import React from 'react';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
+"use client"
+
+import React from 'react'
+import { Link, useLocation } from "react-router-dom"
 import {
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  Divider,
-  Toolbar,
-  Button as MuiButton,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useAuth } from '../hooks/useAuth';
-
-// Styled Drawer for the Sidebar
-const StyledDrawer = styled(Drawer)(({ theme }) => ({
-  width: 240,
-  flexShrink: 0,
-  '& .MuiDrawer-paper': {
-    width: 240,
-    boxSizing: 'border-box',
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-  },
-}));
-
-// Styled ListItemButton for Menu Items with hover and selected states
-const StyledListItemButton = styled(ListItemButton)<{
-  component?: React.ElementType;
-  to?: string;
-}>(({ theme }) => ({
-  '&:hover': {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  '&.Mui-selected': {
-    backgroundColor: theme.palette.primary.light,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.main,
-    },
-  },
-}));
-
-interface MenuItem {
-  label: string;
-  icon: React.ElementType;
-  link: string;
-}
+  Sidebar as ShadcnSidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar
+} from "@/components/ui/sidebar"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { LogOut, Moon, Sun, ChevronLeft } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
+import { Button } from "@/components/ui/button"
 
 interface SidebarProps {
-  menuItems: MenuItem[];
+  menuItems: Array<{
+    label: string;
+    icon: React.ElementType;
+    link: string;
+  }>;
 }
 
 export function Sidebar({ menuItems }: SidebarProps) {
-  const location = useLocation();
-  const { logout, user } = useAuth();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  const location = useLocation()
+  const { toggleSidebar } = useSidebar()
+  const { theme, toggleTheme } = useTheme()
 
   return (
-    <StyledDrawer variant="permanent" anchor="left">
-      <Toolbar />
-      <Typography variant="h6" sx={{ p: 2, textAlign: 'center' }}>
-        PFE Platform
-      </Typography>
-      <Divider />
-      <List>
-        {menuItems.map(({ label, icon: Icon, link }, index) => (
-          <StyledListItemButton
-            key={index}
-            selected={location.pathname === link}
-            component={RouterLink}
-            to={link}
-          >
-            <ListItemIcon sx={{ color: 'primary.contrastText' }}>
-              <Icon />
-            </ListItemIcon>
-            <ListItemText primary={label} />
-          </StyledListItemButton>
-        ))}
-      </List>
-      <Divider />
-      <div style={{ padding: '16px' }}>
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          Logged in as: {user?.name}
-        </Typography>
-        <MuiButton
-          variant="outlined"
-          fullWidth
-          onClick={handleLogout}
-          style={{ color: 'inherit', borderColor: 'inherit' }}
+    <ShadcnSidebar 
+      collapsible="icon" 
+      className="fixed left-0 top-16 bottom-0 z-40 border-r w-[220px] group-data-[state=collapsed]:w-[60px] shrink-0 bg-gradient-to-b from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950 transition-all duration-300 ease-in-out flex flex-col"
+    >
+      <SidebarContent className="px-2 py-4 flex-grow overflow-y-auto">
+        <SidebarMenu>
+          {menuItems.map((item) => (
+            <SidebarMenuItem key={item.link} className="mb-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.link}
+                    className="w-full justify-start px-3 py-2 text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 text-sm"
+                  >
+                    <Link to={item.link} className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="truncate group-data-[state=collapsed]:hidden">
+                        {item.label}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="hidden group-data-[state=collapsed]:block bg-indigo-800 text-white">
+                  {item.label}
+                </TooltipContent>
+              </Tooltip>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t border-white/10 px-2 py-4 space-y-2 sticky bottom-0 bg-gradient-to-b from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950">
+        <Button
+          variant="ghost"
+          onClick={toggleSidebar}
+          className="w-full justify-start text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out"
         >
-          Logout
-        </MuiButton>
-      </div>
-    </StyledDrawer>
-  );
+          <ChevronLeft className="h-5 w-5 mr-2 group-data-[state=collapsed]:rotate-180" />
+          <span className="group-data-[state=collapsed]:hidden">Collapse</span>
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={toggleTheme}
+          className="w-full justify-start text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out"
+        >
+          {theme === "dark" ? (
+            <>
+              <Sun className="h-5 w-5 mr-2" />
+              <span className="group-data-[state=collapsed]:hidden">Light mode</span>
+            </>
+          ) : (
+            <>
+              <Moon className="h-5 w-5 mr-2" />
+              <span className="group-data-[state=collapsed]:hidden">Dark mode</span>
+            </>
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-white hover:bg-white/10 rounded-lg transition-all duration-200 ease-in-out"
+        >
+          <LogOut className="h-5 w-5 mr-2" />
+          <span className="group-data-[state=collapsed]:hidden">Logout</span>
+        </Button>
+      </SidebarFooter>
+    </ShadcnSidebar>
+  )
 }
 

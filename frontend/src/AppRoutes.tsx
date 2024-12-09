@@ -9,12 +9,15 @@ import CompanyLayout from './layouts/CompanyLayout';
 import ProfilePage from './pages/ProfilePage';
 import NotFound from './pages/NotFound';
 
-// Import your dashboard components
+// Import dashboard components
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/users';
 import AdminProjects from './pages/admin/AdminProjects';
 import AdminSchedule from './pages/admin/AdminSchedule';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminNotifications from './pages/admin/AdminNotifications';
+import AdminJuryManagement from './pages/admin/AdminJuryManagement';
+import AdminSoutenancePlanning from './pages/admin/AdminSoutenancePlanning';
 
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import TeacherProjects from './pages/teacher/TeacherProjects';
@@ -22,6 +25,10 @@ import TeacherSchedule from './pages/teacher/TeacherSchedule';
 import TeacherFeedback from './pages/teacher/TeacherFeedback';
 import TeacherProgressReports from './pages/teacher/TeacherProgressReports';
 import TeacherProjectProposals from './pages/teacher/TeacherProjectProposals';
+import TeacherAuthorizationForm from './pages/teacher/TeacherAuthorizationForm';
+import TeacherWishlist from './pages/teacher/TeacherWishList';
+import TeacherAvailability from './pages/teacher/TeacherAvailability';
+import TeacherGrading from './pages/teacher/TeacherGrading';
 
 import StudentDashboard from './pages/student/StudentDashboard';
 import StudentProjects from './pages/student/StudentProjects';
@@ -35,7 +42,21 @@ import StudentPFESelection from './pages/student/StudentPFESelection';
 import CompanyDashboard from './pages/company/CompanyDashboard';
 import CompanyProjects from './pages/company/CompanyProjects';
 import CompanyProjectProposal from './pages/company/CompanyProjectProposal';
-import React from 'react';
+import CompanyNotifications from './pages/company/CompanyNotifications';
+
+import Notifications from './pages/Notifications';
+import Settings from './pages/settings';
+import { AdminUserManagement } from './test/AdminUserManagement';
+import { CollaborationHub } from './test/CollaborationHub';
+import { EmailManagement } from './test/EmailManagement';
+import { SupervisorAssignment } from './test/SupervisorAssignment';
+import { FeedbackSystem } from './test/FeedbackSystem';
+import { ProjectModification } from './test/ProjectModification';
+import { ProjectProgress } from './test/ProjectProgress';
+import { ProjectSubmission } from './test/ProjectSubmission';
+import { ResourceAllocation } from './test/ResourceAllocation';
+import { ReportGenerator } from './test/ReportGenerator';
+import { SubjectValidation } from './test/SubjectValidation';
 
 const AppRoutes = () => {
   return (
@@ -43,24 +64,43 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       
-      <Route path="/admin" element={<PrivateRoute allowedRoles={['admin']}><AdminLayout /></PrivateRoute>}>
+      <Route path="/admin" element={
+        <PrivateRoute allowedRoles={['admin']}>
+          <AdminLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="projects" element={<AdminProjects />} />
         <Route path="schedule" element={<AdminSchedule />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="notifications" element={<AdminNotifications />} />
+        <Route path="jury-management" element={<AdminJuryManagement />} />
+        <Route path="soutenance-planning" element={<AdminSoutenancePlanning />} />
       </Route>
       
-      <Route path="/teacher" element={<PrivateRoute allowedRoles={['teacher']}><TeacherLayout /></PrivateRoute>}>
+      <Route path="/teacher" element={
+        <PrivateRoute allowedRoles={['teacher']}>
+          <TeacherLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<TeacherDashboard />} />
         <Route path="projects" element={<TeacherProjects />} />
         <Route path="schedule" element={<TeacherSchedule />} />
         <Route path="feedback-submission" element={<TeacherFeedback />} />
         <Route path="progress-report" element={<TeacherProgressReports />} />
         <Route path="project-proposal" element={<TeacherProjectProposals />} />
+        <Route path="authorization-form" element={<TeacherAuthorizationForm />} />
+        <Route path="wishlist" element={<TeacherWishlist />} />
+        <Route path="availability" element={<TeacherAvailability />} />
+        <Route path="grading" element={<TeacherGrading />} />
       </Route>
       
-      <Route path="/student" element={<PrivateRoute allowedRoles={['student']}><StudentLayout /></PrivateRoute>}>
+      <Route path="/student" element={
+        <PrivateRoute allowedRoles={['student']}>
+          <StudentLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<StudentDashboard />} />
         <Route path="projects" element={<StudentProjects />} />
         <Route path="schedule" element={<StudentSchedule />} />
@@ -71,10 +111,15 @@ const AppRoutes = () => {
         <Route path="pfe-selection" element={<StudentPFESelection />} />
       </Route>
       
-      <Route path="/company" element={<PrivateRoute allowedRoles={['company']}><CompanyLayout /></PrivateRoute>}>
+      <Route path="/company" element={
+        <PrivateRoute allowedRoles={['company']}>
+          <CompanyLayout />
+        </PrivateRoute>
+      }>
         <Route index element={<CompanyDashboard />} />
         <Route path="projects" element={<CompanyProjects />} />
         <Route path="project-proposal" element={<CompanyProjectProposal />} />
+        <Route path="notifications" element={<CompanyNotifications />} />
       </Route>
       
       <Route 
@@ -85,9 +130,36 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
-      
+      <Route 
+        path="/notifications" 
+        element={
+          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
+            <Notifications />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/settings" 
+        element={
+          <PrivateRoute allowedRoles={['admin', 'teacher', 'student', 'company']}>
+            <Settings />
+          </PrivateRoute>
+        } 
+      />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/adminusermanagement" element={<AdminUserManagement />} />
+      <Route path="/collaboration" element={<CollaborationHub />} />
+      <Route path="/emailmanagement" element={<EmailManagement />} />
+      <Route path="/supervisor" element={<SupervisorAssignment />} />
+      <Route path="/feedback" element={<FeedbackSystem />} />
+      <Route path="/modification" element={<ProjectModification/>} />
+      <Route path="/progress" element={<ProjectProgress/>} />
+      <Route path="/submission" element={<ProjectSubmission/>} />
+      <Route path="/allocation" element={<ResourceAllocation/>} />
+      <Route path="/report" element={<ReportGenerator/>} />
+      <Route path="/validation" element={<SubjectValidation/>} />
+
     </Routes>
   );
 };

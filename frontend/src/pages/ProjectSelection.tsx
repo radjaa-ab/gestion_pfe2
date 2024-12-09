@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import api from './../services/api';
+import { PageContainer } from '@/components/PageContainer'
 
 interface Project {
   id: number;
@@ -64,55 +65,57 @@ const ProjectSelection: React.FC = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Project Selection</CardTitle>
-        <CardDescription>Select your preferred projects in order of priority</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          {fields.map((field, index) => (
-            <div key={field.id} className="flex items-center space-x-2">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id.toString()}>
-                      {project.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((priority) => (
-                    <SelectItem key={priority} value={priority.toString()}>
-                      {priority}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button type="button" variant="outline" onClick={() => remove(index)}>
-                Remove
-              </Button>
-            </div>
-          ))}
-          <Button type="button" variant="outline" onClick={() => append({ projectId: '', priority: '' })}>
-            Add Selection
-          </Button>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit Selections'}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+    <PageContainer title="Project Selection">
+      <Card>
+        <CardHeader>
+          <CardTitle>Project Selection</CardTitle>
+          <CardDescription>Select your preferred projects in order of priority</CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="space-y-4">
+            {fields.map((field, index) => (
+              <div key={field.id} className="flex items-center space-x-2">
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.id.toString()}>
+                        {project.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((priority) => (
+                      <SelectItem key={priority} value={priority.toString()}>
+                        {priority}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button type="button" variant="outline" onClick={() => remove(index)}>
+                  Remove
+                </Button>
+              </div>
+            ))}
+            <Button type="button" variant="outline" onClick={() => append({ projectId: '', priority: '' })}>
+              Add Selection
+            </Button>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit Selections'}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </PageContainer>
   );
 };
 

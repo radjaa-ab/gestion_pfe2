@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
+import { PageContainer } from '@/components/PageContainer'
+import { Input } from "@/components/ui/input"
 
 type NotificationType = 'all' | 'info' | 'warning' | 'success'
 
@@ -27,6 +29,8 @@ const initialNotifications: Notification[] = [
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
   const [filter, setFilter] = useState<NotificationType>('all')
+  const [newNotification, setNewNotification] = useState('')
+  const [newNotificationType, setNewNotificationType] = useState<'info' | 'warning' | 'success'>('info')
   const { toast } = useToast()
 
   const filteredNotifications = notifications.filter(notification => 
@@ -53,6 +57,30 @@ export default function Notifications() {
     })
   }
 
+  const handleAddNotification = () => {
+    if (newNotification.trim() === '') {
+      toast({
+        title: "Error",
+        description: "Notification message cannot be empty.",
+        variant: "destructive",
+      })
+      return
+    }
+    const newNotificationObj: Notification = {
+      id: notifications.length + 1,
+      type: newNotificationType,
+      message: newNotification,
+      date: new Date().toISOString().split('T')[0],
+      read: false,
+    }
+    setNotifications([...notifications, newNotificationObj])
+    setNewNotification('')
+    toast({
+      title: "Notification added",
+      description: "A new notification has been added.",
+    })
+  }
+
   const getIcon = (type: 'info' | 'warning' | 'success') => {
     switch (type) {
       case 'info':
@@ -65,8 +93,7 @@ export default function Notifications() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-theme(spacing.16)-theme(spacing.12))]">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Notifications</h2>
+    <PageContainer title="Notifications">
       <div className="flex justify-between items-center mb-4">
         <Badge variant="secondary" className="text-sm">
           {unreadCount} unread
@@ -88,11 +115,37 @@ export default function Notifications() {
           </Button>
         </div>
       </div>
-      <Card className="flex-1 overflow-hidden">
+      <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-xl font-bold">Your Notifications</CardTitle>
+          <CardTitle>Add New Notification</CardTitle>
         </CardHeader>
-        <CardContent className="h-[calc(100%-5rem)] overflow-auto">
+        <CardContent>
+          <div className="flex space-x-2">
+            <Input
+              value={newNotification}
+              onChange={(e) => setNewNotification(e.target.value)}
+              placeholder="Enter notification message"
+              className="flex-grow"
+            />
+            <Select value={newNotificationType} onValueChange={(value: 'info' | 'warning' | 'success') => setNewNotificationType(value)}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="info">Info</SelectItem>
+                <SelectItem value="warning">Warning</SelectItem>
+                <SelectItem value="success">Success</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={handleAddNotification}>Add</Button>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Notifications</CardTitle>
+        </CardHeader>
+        <CardContent>
           {filteredNotifications.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400 py-4">No notifications to display.</p>
           ) : (
@@ -119,7 +172,7 @@ export default function Notifications() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   )
 }
 

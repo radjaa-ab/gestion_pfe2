@@ -37,8 +37,8 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
-      <Card className="w-full max-w-md">
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-500">
+      <Card className="w-full max-w-md mx-4">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Create an Account</CardTitle>
         </CardHeader>
