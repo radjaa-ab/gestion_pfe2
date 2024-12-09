@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('option');
-            $table->float('moyenne_m1');
+            $table->float('moyenne_m1')->nullable()->default(0);
             $table->timestamps();
         });
     }

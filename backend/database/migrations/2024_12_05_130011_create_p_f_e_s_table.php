@@ -10,14 +10,19 @@ return new class extends Migration
     {
         Schema::create('p_f_e_s', function (Blueprint $table) {
             $table->id();
-            $table->string('intitule');
+            $table->string('titre');
+            $table->text('resume');
             $table->enum('type', ['classique', 'innovant', 'stage']);
-            $table->string('option');
-            $table->text('description');
-            $table->foreignId('student_id')->nullable()->constrained('students')->onDelete('set null');
-            $table->foreignId('encadrant_id')->nullable()->constrained('teachers')->onDelete('set null');
+            $table->enum('option', ['GL', 'IA', 'RSD', 'SIC']);
+            $table->string('technologies');
+            $table->text('besoins_materiels')->nullable();
+            $table->enum('statut', ['proposé', 'validé', 'refusé', 'en_cours', 'terminé'])->default('proposé');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('encadrant_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('co_encadrant_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('student1_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('student2_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('company_id')->nullable()->constrained('companys')->onDelete('set null');
-            $table->enum('statut', ['proposé', 'validé', 'refusé', 'en_cours', 'terminé']);
             $table->timestamps();
         });
     }
@@ -27,3 +32,4 @@ return new class extends Migration
         Schema::dropIfExists('p_f_e_s');
     }
 };
+

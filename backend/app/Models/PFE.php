@@ -9,27 +9,45 @@ class PFE extends Model
 {
     use HasFactory;
 
-    protected $table = 'p_f_e_s';
-
     protected $fillable = [
-        'intitule',
+        'titre',
+        'resume',
         'type',
         'option',
-        'description',
-        'student_id',
-        'encadrant_id',
-        'company_id',
+        'technologies',
+        'besoins_materiels',
         'statut',
+        'user_id',
+        'encadrant_id',
+        'co_encadrant_id',
+        'student1_id',
+        'student2_id',
+        'company_id',
     ];
 
-    public function student()
+    public function user()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(User::class);
     }
 
     public function encadrant()
     {
-        return $this->belongsTo(Teacher::class, 'encadrant_id');
+        return $this->belongsTo(User::class, 'encadrant_id');
+    }
+
+    public function coEncadrant()
+    {
+        return $this->belongsTo(User::class, 'co_encadrant_id');
+    }
+
+    public function student1()
+    {
+        return $this->belongsTo(User::class, 'student1_id');
+    }
+
+    public function student2()
+    {
+        return $this->belongsTo(User::class, 'student2_id');
     }
 
     public function company()
