@@ -12,7 +12,7 @@ import { FileText, Users, Calendar } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StatusBadge } from '../../components/status-badge'
 import { Project } from '../types'
-import TeacherWishlist from '@/pages/teacher/TeacherWishList'
+import TeacherWishlist from '@/pages/teacher/TeacherWishlist'
 import { DefenseAuthorization } from '@/components/DefenseAuthorization'
 
 export default function TeacherDashboard() {
