@@ -48,10 +48,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<User> => {
     try {
       const response = await api.post('/login', { email, password });
-      const loggedInUser = response.data.user;
-      setUser(loggedInUser);
-      localStorage.setItem('token', response.data.access_token);
-      return loggedInUser;
+      const { user, token } = response.data;
+      setUser(user);
+      localStorage.setItem('token', token);
+      return user;
     } catch (error) {
       console.error('Login failed:', error);
       throw error;

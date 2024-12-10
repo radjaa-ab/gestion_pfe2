@@ -21,7 +21,6 @@ import { DefenseAuthorization } from './components/DefenseAuthorization';
 import DefenseScheduling from './components/DefenseScheduling';
 import { GradeEntry } from './components/GradeEntry';
 import { AutomaticAssignment } from './components/AutomaticAssignment';
-import UserManagement from './pages/admin/UserManagement';
 
 const AppRoutes = () => {
   return (
@@ -43,7 +42,6 @@ const AppRoutes = () => {
         <Route path="theme-selection" element={<ThemeSelection userRole="admin" themesToValidate={[]} />} />
         <Route path="automatic-assignment" element={<AutomaticAssignment />} />
         <Route path="defense-scheduling" element={<DefenseScheduling />} />
-        <Route path="user-management" element={<UserManagement />} />
       </Route>
       
       <Route path="/teacher" element={
@@ -103,7 +101,6 @@ const AppRoutes = () => {
       />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<NotFound />} />
-      
     </Routes>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import { Loader2 } from 'lucide-react';
+import api from '../services/api';
+
 
 const formSchema = z.object({
   email: z.string().email({
@@ -24,11 +25,11 @@ const formSchema = z.object({
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const { login } = useAuth();
+  const { login: contextLogin, user: contextUser, setUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,17 +42,40 @@ const Login: React.FC = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const user = await login(data.email, data.password, rememberMe);
+      const response = await api.post('/login', data);
+      const { access_token, user } = response.data;
+
+      if (!user) {
+        throw new Error("Login failed: User data not found in response.");
+      }
+
+      if (!user.role) {
+        throw new Error("Login failed: User role not found in response.");
+      }
+
+
+      localStorage.setItem('token', access_token);
+      setUser(user); // Set user in context
       toast({
         title: 'Connexion réussie',
         description: 'Bienvenue sur la plateforme PFE!',
         variant: 'default',
       });
       navigate(`/${user.role}`);
-    } catch (error) {
+
+    } catch (error: any) { // Use type any to catch all error types
+      console.error('Login error:', error);
+
+      let errorMessage = 'Veuillez vérifier vos identifiants et réessayer.';
+      if (error.message === "Login failed: User data not found in response." || error.message === "Login failed: User role not found in response.") {
+        errorMessage = error.message; // Display specific error message
+      } else if (error.response) {
+        errorMessage = error.response.data.message || 'Server error. Please try again later.'; // Use server-provided message if available
+      }
+
       toast({
         title: 'Échec de la connexion',
-        description: 'Veuillez vérifier vos identifiants et réessayer.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -59,104 +83,85 @@ const Login: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (contextUser) {
+      navigate(`/${contextUser.role}`);
+    }
+  }, [contextUser, navigate]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Connexion à la plateforme PFE</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <EnvelopeIcon className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                        <Input
-                          placeholder="Entrez votre email"
-                          {...field}
-                          className="pl-10"
-                          autoComplete="email"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mot de passe</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <LockClosedIcon className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Entrez votre mot de passe"
-                          {...field}
-                          className="pl-10"
-                          autoComplete="current-password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                        >
-                          {showPassword ? (
-                            <EyeSlashIcon className="w-5 h-5 text-gray-500" />
-                          ) : (
-                            <EyeIcon className="w-5 h-5 text-gray-500" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="rememberMe"
-                  checked={rememberMe}
-                  onCheckedChange={(checked: boolean) => setRememberMe(checked)}
-                />
-                <label
-                  htmlFor="rememberMe"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Se souvenir de moi
-                </label>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connexion en cours...
-                  </>
-                ) : (
-                  'Se connecter'
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-gray-600">
-            Vous n'avez pas de compte ?{' '}
-            <Link to="/register" className="text-blue-600 hover:underline">
-              Inscrivez-vous ici
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
+    <Card className="w-full max-w-md mx-4">
+      <CardHeader>
+        <CardTitle>Connexion</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Email <EnvelopeIcon className="ml-2 h-4 w-4" />
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Mot de passe <LockClosedIcon className="ml-2 h-4 w-4" />
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <LockClosedIcon className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Entrez votre mot de passe"
+                        {...field}
+                        className="pl-10"
+                        autoComplete="current-password"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 p-0 w-auto h-auto"
+                      >
+                        {showPassword ? <EyeSlashIcon className="w-5 h-5 text-gray-500"/> : <EyeIcon className="w-5 h-5 text-gray-500"/>}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connexion en cours...
+                </>
+              ) : (
+                'Se connecter'
+              )}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter>
+        <Link to="/register">Créer un compte</Link>
+      </CardFooter>
+    </Card>
     </div>
   );
 };

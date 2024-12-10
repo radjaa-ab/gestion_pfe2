@@ -1,4 +1,3 @@
-import React from 'react';
 import { ImportUsers } from '@/components/ImportUsers';
 
 export default function UserManagement() {

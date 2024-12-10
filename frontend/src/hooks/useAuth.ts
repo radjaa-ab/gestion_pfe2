@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { useToast } from './use-toast';
 
 interface User {
   id: string;
@@ -15,28 +16,53 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await api.get('/user');
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Set Authorization header for the specific request
+          const response = await api.get('/user', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           setUser(response.data);
-        } catch (error) {
-          console.error('Failed to fetch user:', error);
-          // If the error is due to a 404, it might mean the user is not authenticated
-          if (axios.isAxiosError(error) && error.response?.status === 404) {
-            console.warn('User not found or not authenticated');
-          }
-          localStorage.removeItem('token');
+        } else {
+          navigate('/login');
         }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 401 || axiosError.response?.status === 404) {
+            localStorage.removeItem('token');
+            navigate('/login');
+          } else {
+            // Handle other Axios errors
+            toast({
+              title: 'Error fetching user',
+              description: axiosError.message,
+              variant: 'destructive',
+            });
+          }
+        } else {
+          // Handle non-Axios errors
+          toast({
+            title: 'Error fetching user',
+            description: 'An unexpected error occurred.',
+            variant: 'destructive',
+          });
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchUser();
-  }, []);
+  }, [navigate, toast]);
 
   const login = async (email: string, password: string, _rememberMe?: boolean): Promise<User> => {
     try {
@@ -87,6 +113,6 @@ export const useAuth = () => {
     }
   };
 
-  return { user, loading, login, logout, register, updateUser };
+  return { user, loading, login, logout, register, updateUser, setUser };
 };
 

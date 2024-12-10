@@ -1,35 +1,62 @@
-import { Bell, User, Home, Settings, LogOut } from 'lucide-react'
+"use client"
+
+import { Link } from "react-router-dom"
+import { Bell, Search, User, Settings, Home, Menu, LogOut } from 'lucide-react'
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { useAuth } from '@/hooks/useAuth'
-import { Logo } from './ui/logo'
-import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "../hooks/useAuth"
+import { useSidebar } from "@/components/ui/sidebar"
 
-export function Header() {
-  const { user, logout } = useAuth()
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'teacher' | 'student' | 'company';
+  profilePic?: string;
+}
+
+interface HeaderProps {
+  user: User | null;
+}
+
+export function Header({ user }: HeaderProps) {
+  const { logout } = useAuth()
+  const { toggleSidebar } = useSidebar()
+
+  const handleLogout = () => {
+    logout()
+    // Redirect to login page or show a logout confirmation
+  }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-gradient-to-r from-purple-700 to-indigo-900 dark:from-purple-900 dark:to-indigo-950">
-      <div className="flex h-full items-center justify-between px-6">
-        <div className="flex items-center space-x-2 mr-auto">
-          <Logo className="w-8 h-8 text-white" />
-          <span className="text-white text-xl font-semibold">PFE Platform</span>
-        </div>
-        <div className="flex-1 flex justify-center">
-          <Input
-            placeholder="Search..."
-            className="w-full max-w-md bg-white/10 border-0 text-white placeholder:text-gray-300 focus:bg-white/20 focus:text-white transition-all duration-200 ease-in-out rounded-full"
-          />
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-gradient-to-r from-purple-700 to-indigo-900">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2 text-white hover:bg-white/10 rounded-full transition-all duration-200 ease-in-out transform hover:scale-110">
+            <Menu className="h-6 w-6" />
+          </Button>
+          <Link to="/" className="flex items-center font-bold text-2xl text-white hover:text-indigo-200 transition-colors duration-200">
+            PFE Platform
+          </Link>
         </div>
         <div className="flex items-center space-x-4">
+          <form className="w-[300px]" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                placeholder="Search..."
+                className="pl-10 w-full bg-white/10 border-0 text-white placeholder:text-gray-300 focus:bg-white/20 focus:text-white transition-all duration-200 ease-in-out rounded-full"
+              />
+            </div>
+          </form>
           <Button
             variant="ghost"
             size="icon"
@@ -46,16 +73,19 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-white/10 transition-all duration-200 ease-in-out transform hover:scale-110">
-                <User className="h-5 w-5" />
+                <Avatar className="h-10 w-10 border-2 border-white">
+                  <AvatarImage src={user?.profilePic} alt={user?.name} />
+                  <AvatarFallback className="bg-indigo-600 text-white">{user?.name?.[0]}</AvatarFallback>
+                </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 mt-2 bg-indigo-800 dark:bg-indigo-950 text-white border border-indigo-600" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user?.name}</p>
+            <DropdownMenuContent className="w-56 mt-2 bg-indigo-800 text-white border border-indigo-600" align="end" forceMount>
+              <div className="flex items-center justify-start gap-2 p-2">
+                <div className="flex flex-col space-y-1 leading-none">
+                  <p className="font-medium">{user?.name}</p>
                   <p className="text-sm text-indigo-300">{user?.email}</p>
                 </div>
-              </DropdownMenuLabel>
+              </div>
               <DropdownMenuSeparator className="bg-indigo-600" />
               <DropdownMenuItem asChild className="hover:bg-indigo-700 focus:bg-indigo-700">
                 <Link to="/profile" className="flex items-center">
@@ -76,9 +106,11 @@ export function Header() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-indigo-600" />
-              <DropdownMenuItem onSelect={logout} className="hover:bg-indigo-700 focus:bg-indigo-700">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+              <DropdownMenuItem onSelect={handleLogout} className="hover:bg-indigo-700 focus:bg-indigo-700">
+                <span className="flex items-center">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
