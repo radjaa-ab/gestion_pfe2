@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
@@ -19,10 +19,12 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      // Redirect to login page or dispatch a logout action
+      // You might want to use a centralized state management solution to handle auth state
+      // For example, if using Redux:
+      // store.dispatch(logout());
     }
     return Promise.reject(error);
   }
@@ -44,6 +46,8 @@ export const logout = async () => {
     localStorage.removeItem('token');
   } catch (error) {
     console.error('Logout error:', error);
+    // Even if the logout request fails, we still want to remove the token
+    localStorage.removeItem('token');
   }
 };
 
@@ -73,6 +77,27 @@ export const importUsers = async (file: File) => {
   }
 };
 
+// Add a function to get the current user's profile
+export const getCurrentUser = async () => {
+  try {
+    const response = await api.get('/user');
+    return response.data;
+  } catch (error) {
+    console.error('Get current user error:', error);
+    throw error;
+  }
+};
+
+// Add a function to update the user's profile
+export const updateProfile = async (userData: { name?: string, email?: string }) => {
+  try {
+    const response = await api.put('/user', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Update profile error:', error);
+    throw error;
+  }
+};
 
 export default api;
 
